@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 45 100% 98%; /* Softer cream for background */
+    --foreground: 25 60% 30%; /* Dark friendly brown */
+    --card: 35 100% 96%; /* Warm cream for cards */
+    --card-foreground: 25 60% 30%;
+    --popover: 35 100% 96%;
+    --popover-foreground: 25 60% 30%;
+    --primary: 35 90% 55%; /* Bright, glossy orange */
+    --primary-foreground: 35 100% 10%; /* Dark text for orange buttons */
+    --secondary: 45 90% 65%; /* Bright yellow */
+    --secondary-foreground: 35 100% 10%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 140 70% 45%; /* Vibrant green */
+    --accent-foreground: 45 100% 98%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 35 80% 80%; /* Softer orange border */
+    --input: 35 100% 96%;
+    --ring: 35 90% 55%; /* Orange ring for focus */
+    --radius: 1.5rem; /* More rounded corners */
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --sidebar-background: hsl(var(--background));
+    --sidebar-foreground: hsl(var(--foreground));
+    --sidebar-primary: hsl(var(--primary));
+    --sidebar-primary-foreground: hsl(var(--primary-foreground));
+    --sidebar-accent: hsl(var(--accent));
+    --sidebar-accent-foreground: hsl(var(--accent-foreground));
+    --sidebar-border: hsl(var(--border));
+    --sidebar-ring: hsl(var(--ring));
+  }
+
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 15%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 35 90% 60%;
+    --primary-foreground: 35 100% 10%;
+    --secondary: 45 90% 60%;
+    --secondary-foreground: 35 100% 10%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 140 70% 50%;
+    --accent-foreground: 45 100% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 35 80% 30%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 35 90% 60%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: hsl(var(--background));
+    --sidebar-foreground: hsl(var(--foreground));
+    --sidebar-primary: hsl(var(--primary));
+    --sidebar-primary-foreground: hsl(var(--primary-foreground));
+    --sidebar-accent: hsl(var(--accent));
+    --sidebar-accent-foreground: hsl(var(--accent-foreground));
+    --sidebar-border: hsl(var(--border));
+    --sidebar-ring: hsl(var(--ring));
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    /* Sky blue to grassy green gradient */
+    background-image: linear-gradient(to bottom, #a0d8ef, #b9f2a0);
+  }
+  
+  .font-headline {
+    text-shadow: 2px 2px 0px hsl(var(--primary-foreground) / 0.2);
+  }
+}
+
+@layer components {
+    .btn-glossy {
+        @apply shadow-md border-b-4 border-primary-foreground/20;
+        text-shadow: 1px 1px 1px hsl(var(--primary-foreground) / 0.2);
+        background-image: linear-gradient(to bottom, hsl(var(--secondary)), hsl(var(--primary)));
+    }
+    .btn-glossy:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px hsl(var(--primary) / 0.3);
+    }
+    .btn-glossy:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 4px hsl(var(--primary) / 0.4);
+    }
+}

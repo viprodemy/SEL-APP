@@ -1,0 +1,38 @@
+
+{
+  "entities": {
+    "StudentCheckIn": {
+      "title": "Student Check-In",
+      "description": "A record of a student's emotional check-in session.",
+      "type": "object",
+      "properties": {
+        "student": { "type": "string", "description": "The name of the student." },
+        "date": { "type": "string", "format": "date-time", "description": "The ISO timestamp of the check-in." },
+        "emotion": { "type": "string", "description": "The ID of the initial emotion selected." },
+        "intensity": { "type": "number", "description": "The intensity level (0-10) of the initial emotion." },
+        "description": { "type": "string", "description": "The student's description of their situation." },
+        "bodyScan": { "type": "array", "items": { "type": "string" }, "description": "List of body sensations noted." },
+        "needs": {
+          "type": "object",
+          "properties": {
+            "need": { "type": "string" },
+            "hope": { "type": "string" },
+            "selfCare": { "type": "string" }
+          }
+        },
+        "postCoolDownEmotion": { "type": "string", "description": "The ID of the emotion after cool-down." },
+        "postCoolDownIntensity": { "type": "number", "description": "The intensity level after cool-down." }
+      },
+      "required": ["student", "date", "emotion", "intensity"]
+    }
+  },
+  "auth": {
+    "providers": ["google.com"]
+  },
+  "firestore": {
+    "/checkins/{checkinId}": {
+      "schema": "StudentCheckIn",
+      "description": "Collection of all student emotional check-ins."
+    }
+  }
+}

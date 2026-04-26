@@ -1,0 +1,6 @@
+{
+  "name": "SEL Student Assistant",
+  "description": "An AI-powered Social-Emotional Learning (SEL) assistant for students to check-in, regulate emotions, and for teachers to monitor progress via Google Sheets.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
