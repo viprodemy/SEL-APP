@@ -39,6 +39,10 @@ const AnalyzeEmotionalStateOutputSchema = z.object({
       en: z.string().describe("Suggestions for teachers and parents in English."),
       zh: z.string().describe("Suggestions for teachers and parents in Chinese."),
   }),
+  reframing: z.object({
+      en: z.string().describe("A positive reframing statement in English."),
+      zh: z.string().describe("A positive reframing statement in Chinese."),
+  }),
 });
 
 export type AnalyzeEmotionalStateInput = z.infer<typeof AnalyzeEmotionalStateInputSchema>;
@@ -82,6 +86,11 @@ const prompt = ai.definePrompt({
 
     4.  **Stakeholder Suggestions (For Teacher/Parent)**: Provide specific advice for teachers/parents to support this student's stated "{{needs.hope}}".
         - Example (en): "Teacher: Since the student hopes to talk after class, try to create a private 5-minute window for them."
+
+    5.  **Reframing**: Generate a short, highly personalized, positive self-affirmation statement for the student. 
+        - It should be in the first person ("I am...", "My feelings..."). 
+        - Connect a strength to the situation. 
+        - Avoid generic advice.
 
     CRITICAL: Ensure the tone is warm, non-judgmental, and the content is directly linked to the student's words. Do not use generic placeholders.
   `,

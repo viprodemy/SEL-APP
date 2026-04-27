@@ -108,17 +108,20 @@ export default function EmotionCheckInFlow() {
 
   const handleFinish = async () => {
     setIsFinalizing(true);
+    setStep(8); // Move to Power Card early so student isn't stuck on Post-Emotion page
+
     if (queue.status === 'idle') {
       await queue.joinQueue(studentName);
       return; 
     }
 
-    toast({
-        title: "Finalizing... / 正在完成...",
-        description: "Syncing data and releasing AI slot. / 同步数据并释放 AI 席位。",
-    });
+    // Rest of handling will happen in useEffect triggered by step 8
+  }
 
-    let aiReportText = '';
+  const performFinalProcessing = async () => {
+    if (processingRef.current) return;
+    processingRef.current = true;
+
     try {
         const emotionName = emotions.find(e => e.id === selectedEmotion?.id)?.name.en || selectedEmotion?.id;
         const postCoolDownEmotionName = postCoolDownEmotion ? emotions.find(e => e.id === postCoolDownEmotion.id)?.name.en : undefined;
@@ -133,7 +136,7 @@ export default function EmotionCheckInFlow() {
             postCoolDownEmotion: postCoolDownEmotionName,
             postCoolDownIntensity: postCoolDownIntensity,
         });
-        aiReportText = result.report;
+        const aiReportText = result.report;
         
         await syncToGoogleSheets(checkInData, aiReportText);
 
@@ -143,24 +146,23 @@ export default function EmotionCheckInFlow() {
         });
         
         await queue.completeRequest();
-        setStep(8); // Go to Power Card
     } catch (err) {
         console.error("AI report generation failed:", err);
         toast({
             variant: "destructive",
             title: "Error / 错误",
-            description: "Something went wrong. / 发生错误。",
+            description: "Something went wrong saving your insights. / 记录同步时发生错误。",
         });
         await queue.failRequest(err);
+    } finally {
+        processingRef.current = false;
+        setIsFinalizing(false);
     }
   }
 
   useEffect(() => {
-    if (step === 7 && isFinalizing && queue.isProcessing && !processingRef.current) {
-        processingRef.current = true;
-        handleFinish().finally(() => {
-            processingRef.current = false;
-        });
+    if (step === 8 && isFinalizing && queue.isProcessing && !processingRef.current) {
+        performFinalProcessing();
     }
   }, [step, isFinalizing, queue.isProcessing]);
   
@@ -296,7 +298,7 @@ export default function EmotionCheckInFlow() {
         </div>
 
         {/* Queue Loader Overlay */}
-        {((queue.isWaiting) || (step === 7 && queue.isProcessing)) && (
+        {((queue.isWaiting) || (step === 5 && queue.isProcessing)) && (
             <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center">
                     <div className="bg-card border shadow-2xl rounded-3xl p-8 max-w-md w-full flex flex-col items-center gap-6">
                         <div className="relative">
@@ -322,9 +324,9 @@ export default function EmotionCheckInFlow() {
 
                         {queue.isWaiting && (
                             <div className="text-xs text-muted-foreground mt-4">
-                                Concurrent AI Slots: {queue.activeCount} / 10
+                                Concurrent AI Slots: {queue.activeCount} / 50
                                 <br />
-                                AI 并发席位：{queue.activeCount} / 10
+                                AI 并发席位：{queue.activeCount} / 50
                             </div>
                         )}
                     </div>

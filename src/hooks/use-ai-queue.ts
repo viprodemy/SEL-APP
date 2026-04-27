@@ -59,10 +59,10 @@ export function useAIQueue() {
            const waitingDocs = docs.filter(d => d.data().status === 'waiting');
            const myWaitingIndex = waitingDocs.findIndex(d => d.id === requestId);
            
-           // Concurrent limit is 10
-           if (currentActiveCount < 10) {
+           // Concurrent limit is 50
+           if (currentActiveCount < 50) {
              // If I'm one of the ones that can fill the remaining spots
-             if (myWaitingIndex !== -1 && (currentActiveCount + myWaitingIndex < 10)) {
+             if (myWaitingIndex !== -1 && (currentActiveCount + myWaitingIndex < 50)) {
                updateDoc(requestRef, { 
                  status: 'processing',
                  updatedAt: serverTimestamp()

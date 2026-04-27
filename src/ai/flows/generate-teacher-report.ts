@@ -40,7 +40,7 @@ const prompt = ai.definePrompt({
   name: 'generateTeacherReportPrompt',
   input: {schema: GenerateTeacherReportInputSchema},
   output: {schema: GenerateTeacherReportOutputSchema},
-  model: 'googleai/gemma-4-31b-it',
+  model: 'googleai/gemini-1.5-flash',
   config: {
     temperature: 0.7, 
     safetySettings: [

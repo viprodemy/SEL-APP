@@ -124,6 +124,16 @@ export default function StepDecoder({ onNext, onBack, emotion, description, need
                     content_zh={analysis.suggestions.map(s => s.zh)}
                     isList={true}
                 />
+
+                <div className="bg-accent/10 border-l-4 border-accent p-6 rounded-2xl shadow-inner animate-in zoom-in duration-500 text-left">
+                    <h3 className="font-bold flex items-center gap-2 mb-3 text-accent-foreground">
+                        <Sparkles className="w-5 h-5" />
+                        Positive Reframing / 正向思考
+                    </h3>
+                    <p className="text-xl font-bold text-foreground leading-tight">{analysis.reframing.en}</p>
+                    <div className="h-px bg-accent/20 my-4"></div>
+                    <p className="text-lg text-foreground font-semibold">{analysis.reframing.zh}</p>
+                </div>
                 
                 <Accordion type="single" collapsible className="w-full">
                   <AccordionItem value="item-1" className="border-t-2 border-dashed border-primary/10 pt-4">
