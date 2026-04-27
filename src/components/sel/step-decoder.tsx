@@ -19,6 +19,8 @@ interface StepDecoderProps {
     hope: string;
     selfCare: string;
   };
+  isQueueProcessing: boolean;
+  onAnalysisDone: () => void;
 }
 
 const InfoCard = ({ icon, title, content_en, content_zh, isList = false }: { icon: React.ElementType, title: string, content_en: string | string[], content_zh: string | string[], isList?: boolean }) => {
@@ -49,7 +51,7 @@ const InfoCard = ({ icon, title, content_en, content_zh, isList = false }: { ico
     )
 }
 
-export default function StepDecoder({ onNext, onBack, emotion, description, needs }: StepDecoderProps) {
+export default function StepDecoder({ onNext, onBack, emotion, description, needs, isQueueProcessing, onAnalysisDone }: StepDecoderProps) {
   const [analysis, setAnalysis] = useState<AnalyzeEmotionalStateOutput | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +59,7 @@ export default function StepDecoder({ onNext, onBack, emotion, description, need
 
   useEffect(() => {
     async function getAnalysis() {
-      if (!emotion || hasFetched.current) return;
+      if (!emotion || hasFetched.current || !isQueueProcessing) return;
       
       hasFetched.current = true;
       setIsLoading(true);
@@ -69,6 +71,7 @@ export default function StepDecoder({ onNext, onBack, emotion, description, need
           needs,
         });
         setAnalysis(result);
+        onAnalysisDone(); // Release queue slot
       } catch (err: any) {
         console.error("Error getting AI analysis:", err);
         if (err.message?.includes('429')) {
@@ -81,7 +84,7 @@ export default function StepDecoder({ onNext, onBack, emotion, description, need
       }
     }
     getAnalysis();
-  }, [emotion, description, needs]);
+  }, [emotion, description, needs, isQueueProcessing, onAnalysisDone]);
 
   return (
     <Card className="shadow-lg">

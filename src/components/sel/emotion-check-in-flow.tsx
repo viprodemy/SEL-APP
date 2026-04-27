@@ -72,7 +72,11 @@ export default function EmotionCheckInFlow() {
 
   // Add this effect to auto-join queue when reaching AI steps
   useEffect(() => {
-    if (step >= 5 && step <= 9 && queue.status === 'idle') {
+    // Only join if we are on an AI step and the queue is idle
+    // We join for: Step 5 (Decoder), Step 6 (Reframing), Step 8 (Final Report)
+    // Actually Reframing is step 6, Finish is step 8 (Post-cool down handleFinish)
+    const aiSteps = [5, 6];
+    if (aiSteps.includes(step) && queue.status === 'idle') {
       queue.joinQueue(studentName);
     }
   }, [step, queue.status, studentName]);
@@ -81,12 +85,18 @@ export default function EmotionCheckInFlow() {
     if (selectedEmotion?.id !== 'happy' && selectedEmotion?.id !== 'proud') {
       setStep(7);
     } else {
+      // Re-trigger join for finish report if coming from happy/proud path
       handleFinish();
     }
   }
 
   const handleFinish = async () => {
-    // Already in queue/processing from step 5
+    // If we're not in the queue yet for the final step, join it
+    if (queue.status === 'idle') {
+      await queue.joinQueue(studentName);
+      return; // The useEffect or the process logic will handle it when status becomes processing
+    }
+
     toast({
         title: "Finalizing... / 正在完成...",
         description: "Syncing data and releasing your AI slot. / 同步数据并释放 AI 席位。",
@@ -118,7 +128,7 @@ export default function EmotionCheckInFlow() {
         });
         
         await queue.completeRequest();
-        setStep(9);
+        setStep(9); // Go to Power Card
     } catch (err) {
         console.error("AI report generation failed:", err);
         toast({
@@ -130,7 +140,15 @@ export default function EmotionCheckInFlow() {
     }
   }
 
-  // Remove the old processAI effect since we now handle it per step
+  // Effect to handle final report generation once queue is processing
+  useEffect(() => {
+    if (step === 8 && queue.isProcessing && !processingRef.current) {
+        processingRef.current = true;
+        handleFinish().finally(() => {
+            processingRef.current = false;
+        });
+    }
+  }, [step, queue.isProcessing]);
   
   const handleFinishFromPowerCard = () => {
     setStep(10);
@@ -189,6 +207,8 @@ export default function EmotionCheckInFlow() {
             emotion={selectedEmotion}
             description={description}
             needs={needs}
+            isQueueProcessing={queue.isProcessing}
+            onAnalysisDone={() => queue.completeRequest()}
           />
         );
       case 6:
@@ -198,6 +218,8 @@ export default function EmotionCheckInFlow() {
             onBack={handleBack}
             emotion={selectedEmotion}
             description={description}
+            isQueueProcessing={queue.isProcessing}
+            onReframingDone={() => queue.completeRequest()}
           />
         );
       case 7:
@@ -246,7 +268,7 @@ export default function EmotionCheckInFlow() {
 
         {/* Queue Loader Overlay */}
         <AnimatePresence>
-            {((queue.isWaiting) || (step === 9 && queue.status === 'processing')) && (
+            {((queue.isWaiting) || (step === 8 && queue.isProcessing)) && (
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -265,12 +287,12 @@ export default function EmotionCheckInFlow() {
                         
                         <div className="space-y-2">
                             <h2 className="text-2xl font-headline font-bold text-primary">
-                                {queue.isWaiting ? "In Queue / 排队中" : "Finalizing Report / 正在生成报告"}
+                                {queue.isWaiting ? "In Queue / 排队中" : "AI Thinking / AI 思考中"}
                             </h2>
                             <p className="text-muted-foreground">
                                 {queue.isWaiting 
                                     ? `High traffic! Please wait... Your position: ${queue.position}\n当前人数较多！请稍候... 您的位置：${queue.position}`
-                                    : "AI is creating the final report for your teacher. / AI 正在为老师生成最终报告。"
+                                    : "AI is analyzing your check-in and generating insights.\nAI 正在分析您的回馈并生成建议。"
                                 }
                             </p>
                         </div>

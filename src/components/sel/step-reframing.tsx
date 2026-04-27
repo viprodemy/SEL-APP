@@ -13,22 +13,25 @@ interface StepReframingProps {
   onBack: () => void;
   emotion: Emotion | null;
   description: string;
+  isQueueProcessing: boolean;
+  onReframingDone: () => void;
 }
 
-export default function StepReframing({ onNext, onBack, emotion, description }: StepReframingProps) {
+export default function StepReframing({ onNext, onBack, emotion, description, isQueueProcessing, onReframingDone }: StepReframingProps) {
   const [reframing, setReframing] = useState<ProvideEmotionReframingOutput | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const hasFetched = useRef(false);
 
   useEffect(() => {
     async function getReframing() {
-      if (!emotion || hasFetched.current) return;
+      if (!emotion || hasFetched.current || !isQueueProcessing) return;
 
       hasFetched.current = true;
       setIsLoading(true);
       try {
         const result = await provideEmotionReframing({ emotion: emotion.name.en, description });
         setReframing(result);
+        onReframingDone(); // Release queue slot
       } catch (error) {
         console.error("Error getting reframing statements:", error);
       } finally {
@@ -36,7 +39,7 @@ export default function StepReframing({ onNext, onBack, emotion, description }: 
       }
     }
     getReframing();
-  }, [emotion, description]);
+  }, [emotion, description, isQueueProcessing, onReframingDone]);
 
   const statement = reframing?.reframingStatement;
   const isPositiveEmotion = emotion?.id === 'happy' || emotion?.id === 'proud';
