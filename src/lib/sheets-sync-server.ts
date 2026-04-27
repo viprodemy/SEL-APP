@@ -43,6 +43,7 @@ export async function syncCheckinToSheets(data: any, aiReport?: string) {
     needs: typeof data.needs === 'object' ? `Need: ${data.needs.need}, Hope: ${data.needs.hope}, Care: ${data.needs.selfCare}` : String(data.needs),
     postEmotion: data.postCoolDownEmotion || '',
     postIntensity: data.postCoolDownIntensity || 0,
+    loggedInUser: data.loggedInUser || 'Anonymous',
     aiReport: aiReport || '', // New field for AI analysis
   };
 

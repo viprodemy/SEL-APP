@@ -18,6 +18,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useAIQueue } from '@/hooks/use-ai-queue';
 import { useEffect, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/lib/hooks/use-auth';
 // import { collection, addDoc } from 'firebase/firestore';
 // import { useFirestore } from '@/firebase';
 // import { errorEmitter } from '@/firebase/error-emitter';
@@ -28,6 +29,7 @@ import { emotions } from '@/lib/data';
 
 export default function EmotionCheckInFlow() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const queue = useAIQueue();
   const processingRef = useRef(false);
   // const db = useFirestore();
@@ -58,7 +60,7 @@ export default function EmotionCheckInFlow() {
     setBodyScan([]);
   };
 
-  const checkInData: Omit<StudentCheckIn, 'id'> = {
+  const checkInData: Omit<StudentCheckIn, 'id'> & { loggedInUser?: string } = {
     student: studentName,
     date: checkInDate?.toISOString() || new Date().toISOString(),
     emotion: selectedEmotion?.id || '',
@@ -68,6 +70,7 @@ export default function EmotionCheckInFlow() {
     needs,
     postCoolDownEmotion: postCoolDownEmotion?.id,
     postCoolDownIntensity: postCoolDownIntensity,
+    loggedInUser: user || 'Anonymous',
   };
 
   // Add this effect to auto-join queue when reaching AI steps

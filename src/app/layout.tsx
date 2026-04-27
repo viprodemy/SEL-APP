@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import MainLayout from '@/components/layout/main-layout';
 import { FirebaseClientProvider } from '@/firebase';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
+import { AuthProvider } from '@/lib/hooks/use-auth';
 
 export const metadata: Metadata = {
   title: 'SEL Assistant',
@@ -26,11 +27,13 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <FirebaseClientProvider>
-          <FirebaseErrorListener />
-          <MainLayout>{children}</MainLayout>
-          <Toaster />
-        </FirebaseClientProvider>
+        <AuthProvider>
+          <FirebaseClientProvider>
+            <FirebaseErrorListener />
+            <MainLayout>{children}</MainLayout>
+            <Toaster />
+          </FirebaseClientProvider>
+        </AuthProvider>
       </body>
     </html>
   );
