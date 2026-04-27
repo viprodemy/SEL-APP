@@ -12,10 +12,30 @@ export async function syncCheckinToSheets(data: any, aiReport?: string) {
     return { success: false, error: "Configuration missing" };
   }
 
+  const klTime = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Kuala_Lumpur',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }).format(new Date());
+
   const payload = {
-    timestamp: new Date().toISOString(),
+    timestamp: klTime,
     studentName: data.student,
-    date: data.date,
+    date: data.date ? new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Kuala_Lumpur',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    }).format(new Date(data.date)) : klTime,
     emotion: data.emotion,
     intensity: data.intensity,
     description: data.description,

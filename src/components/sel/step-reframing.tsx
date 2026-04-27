@@ -5,7 +5,7 @@ import type { Emotion } from '@/types';
 import { provideEmotionReframing, type ProvideEmotionReframingOutput } from '@/ai/flows/provide-emotion-reframing';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Loader2 } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 
 interface StepReframingProps {
@@ -52,9 +52,12 @@ export default function StepReframing({ onNext, onBack, emotion, description }: 
       </CardHeader>
       <CardContent className="space-y-4 text-left p-8">
         {isLoading ? (
-          <div className="space-y-3">
-            <Skeleton className="h-8 w-3/4" />
-            <Skeleton className="h-6 w-1/2" />
+          <div className="space-y-4 py-12 flex flex-col items-center justify-center">
+            <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+            <div className="space-y-2 text-center">
+                <h3 className="text-xl font-bold text-primary">Positive Reframing... / 正向思考中...</h3>
+                <p className="text-muted-foreground">Finding a way to turn this feeling into a positive strength. / 寻找将这种感觉转化为正向力量的方法。</p>
+            </div>
           </div>
         ) : (
           statement && (

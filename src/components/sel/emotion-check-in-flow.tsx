@@ -15,6 +15,9 @@ import StepPostCoolDownEmotion from './step-post-cool-down-emotion';
 import StepPowerCard from './step-power-card';
 import { useToast } from '@/hooks/use-toast';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useAIQueue } from '@/hooks/use-ai-queue';
+import { useEffect, useRef } from 'react';
+import { Loader2 } from 'lucide-react';
 // import { collection, addDoc } from 'firebase/firestore';
 // import { useFirestore } from '@/firebase';
 // import { errorEmitter } from '@/firebase/error-emitter';
@@ -25,6 +28,8 @@ import { emotions } from '@/lib/data';
 
 export default function EmotionCheckInFlow() {
   const { toast } = useToast();
+  const queue = useAIQueue();
+  const processingRef = useRef(false);
   // const db = useFirestore();
   const [step, setStep] = useState(-1);
   const [studentName, setStudentName] = useState('');
@@ -64,6 +69,13 @@ export default function EmotionCheckInFlow() {
     postCoolDownEmotion: postCoolDownEmotion?.id,
     postCoolDownIntensity: postCoolDownIntensity,
   };
+
+  // Add this effect to auto-join queue when reaching AI steps
+  useEffect(() => {
+    if (step >= 5 && step <= 9 && queue.status === 'idle') {
+      queue.joinQueue(studentName);
+    }
+  }, [step, queue.status, studentName]);
   
   const handleNextFromReframing = () => {
     if (selectedEmotion?.id !== 'happy' && selectedEmotion?.id !== 'proud') {
@@ -74,41 +86,51 @@ export default function EmotionCheckInFlow() {
   }
 
   const handleFinish = async () => {
+    // Already in queue/processing from step 5
     toast({
-        title: "Syncing data... / 同步中...",
-        description: "Please wait a moment while we save your record and generate the teacher report.",
+        title: "Finalizing... / 正在完成...",
+        description: "Syncing data and releasing your AI slot. / 同步数据并释放 AI 席位。",
     });
 
-    // Generate AI Summary for the teacher PDF in Drive
     let aiReportText = '';
     try {
-      const emotionName = emotions.find(e => e.id === selectedEmotion?.id)?.name.en || selectedEmotion?.id;
-      const postCoolDownEmotionName = postCoolDownEmotion ? emotions.find(e => e.id === postCoolDownEmotion.id)?.name.en : undefined;
-      
-      const result = await generateTeacherReport({
-          studentName: studentName,
-          emotion: emotionName || 'Unknown',
-          intensity: intensity,
-          description: description,
-          bodyScan: bodyScan,
-          needs: needs,
-          postCoolDownEmotion: postCoolDownEmotionName,
-          postCoolDownIntensity: postCoolDownIntensity,
-      });
-      aiReportText = result.report;
+        const emotionName = emotions.find(e => e.id === selectedEmotion?.id)?.name.en || selectedEmotion?.id;
+        const postCoolDownEmotionName = postCoolDownEmotion ? emotions.find(e => e.id === postCoolDownEmotion.id)?.name.en : undefined;
+        
+        const result = await generateTeacherReport({
+            studentName: studentName,
+            emotion: emotionName || 'Unknown',
+            intensity: intensity,
+            description: description,
+            bodyScan: bodyScan,
+            needs: needs,
+            postCoolDownEmotion: postCoolDownEmotionName,
+            postCoolDownIntensity: postCoolDownIntensity,
+        });
+        aiReportText = result.report;
+        
+        // Relying on Google Sheets for storage as requested to avoid Firebase errors
+        await syncToGoogleSheets(checkInData, aiReportText);
+
+        toast({
+            title: "Check-in Saved! / 签到成功！",
+            description: "Your record is saved and synced to the teacher's drive. / 记录已保存并同步至教师云端。",
+        });
+        
+        await queue.completeRequest();
+        setStep(9);
     } catch (err) {
-      console.error("AI report generation failed for sync:", err);
+        console.error("AI report generation failed:", err);
+        toast({
+            variant: "destructive",
+            title: "Error / 错误",
+            description: "Something went wrong. Please try again. / 发生错误，请重试。",
+        });
+        await queue.failRequest(err);
     }
-
-    // Relying on Google Sheets for storage as requested to avoid Firebase errors
-    syncToGoogleSheets(checkInData, aiReportText);
-
-    toast({
-        title: "Check-in Saved! / 签到成功！",
-        description: "Your record is saved and synced to the teacher's drive. / 记录已保存并同步至教师云端。",
-    });
-    setStep(9);
   }
+
+  // Remove the old processAI effect since we now handle it per step
   
   const handleFinishFromPowerCard = () => {
     setStep(10);
@@ -209,7 +231,7 @@ export default function EmotionCheckInFlow() {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto relative">
         <AnimatePresence mode="wait">
             <motion.div
                 key={step}
@@ -220,6 +242,49 @@ export default function EmotionCheckInFlow() {
             >
                 {renderStep()}
             </motion.div>
+        </AnimatePresence>
+
+        {/* Queue Loader Overlay */}
+        <AnimatePresence>
+            {((queue.isWaiting) || (step === 9 && queue.status === 'processing')) && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6 text-center"
+                >
+                    <div className="bg-card border shadow-2xl rounded-3xl p-8 max-w-md w-full flex flex-col items-center gap-6">
+                        <div className="relative">
+                            <Loader2 className="w-16 h-16 text-primary animate-spin" />
+                            {queue.isWaiting && queue.position > 0 && (
+                                <div className="absolute inset-0 flex items-center justify-center font-bold text-xl">
+                                    {queue.position}
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <h2 className="text-2xl font-headline font-bold text-primary">
+                                {queue.isWaiting ? "In Queue / 排队中" : "Finalizing Report / 正在生成报告"}
+                            </h2>
+                            <p className="text-muted-foreground">
+                                {queue.isWaiting 
+                                    ? `High traffic! Please wait... Your position: ${queue.position}\n当前人数较多！请稍候... 您的位置：${queue.position}`
+                                    : "AI is creating the final report for your teacher. / AI 正在为老师生成最终报告。"
+                                }
+                            </p>
+                        </div>
+
+                        {queue.isWaiting && (
+                            <div className="text-xs text-muted-foreground mt-4">
+                                Concurrent AI Slots: {queue.activeCount} / 10
+                                <br />
+                                AI 并发席位：{queue.activeCount} / 10
+                            </div>
+                        )}
+                    </div>
+                </motion.div>
+            )}
         </AnimatePresence>
     </div>
   );

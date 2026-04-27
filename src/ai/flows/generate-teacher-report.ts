@@ -42,7 +42,7 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateTeacherReportOutputSchema},
   model: 'googleai/gemma-4-31b-it',
   config: {
-    temperature: 0.5, // 报告需要一定的准确性，0.5 比较平衡
+    temperature: 0.7, 
     safetySettings: [
       { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
       { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
@@ -50,31 +50,32 @@ const prompt = ai.definePrompt({
       { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_ONLY_HIGH' },
     ],
   },
-  prompt: `You are an AI assistant for teachers, skilled in social-emotional learning.
-A student named {{studentName}} just completed an emotional check-in.
-Your task is to generate a short, constructive paragraph for their teacher, in both English and Chinese.
+  prompt: `You are an expert Social-Emotional Learning (SEL) consultant for teachers.
+A student named {{studentName}} has completed an emotional check-in.
+Your task is to generate a high-quality, professional report for their teacher that provides deep insight and clear action items.
 
-Here is the data from the check-in:
+### STUDENT DATA:
 - Initial Emotion: {{emotion}} (Intensity: {{intensity}}/10)
-- Student's Description: "{{description}}"
-- Body Sensations Felt In: {{#each bodyScan}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
+- Student's Context: "{{description}}"
+- Physical Sensations: {{#each bodyScan}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
 - Stated Need: "{{needs.need}}"
 - Stated Hope: "{{needs.hope}}"
 - Self-Care Plan: "{{needs.selfCare}}"
 {{#if postCoolDownEmotion}}
-- After Cool-Down Emotion: {{postCoolDownEmotion}} (Intensity: {{postCoolDownIntensity}}/10)
+- Post Cool-Down: {{postCoolDownEmotion}} (Intensity: {{postCoolDownIntensity}}/10)
 {{/if}}
 
-Based on all this information, write a one-paragraph report for the teacher.
-- If the initial emotion is positive (e.g., Happy, Proud), focus on specific praise. What specific action or insight can the teacher acknowledge?
-- If the initial emotion is negative (e.g., Sad, Angry, Worried) and the intensity is high (7 or above), emphasize the urgency and provide clear, simple steps for support. How can the teacher help the student with their stated need and hope immediately?
-- If the emotion is negative but the intensity is lower, provide supportive suggestions.
-- If there was a cool-down step, comment on the change (or lack of change) in emotion. For example, "It's a positive sign that they felt calmer after the exercise" or "They still felt worried after the exercise, suggesting the issue may need more attention."
-- Keep the tone positive and action-oriented. Start by acknowledging the student's self-awareness.
-- Address the teacher directly. For example, "You can praise {{studentName}} for..." or "You could support {{studentName}} by...".
-- Be concise and focus on the most important action the teacher can take.
+### YOUR TASK:
+Write a one-paragraph report in both English and Chinese. 
+Do NOT be generic. Use the "Student's Context" and "Stated Hope" to give the teacher a real "aha!" moment about why the student is feeling this way.
 
-**IMPORTANT**: Provide the report in both English and Chinese. Separate the two languages with a newline character. For example: "English paragraph.\n中文段落。"`,
+1. **Analytical Insight**: Why is {{studentName}} feeling {{emotion}}? Link it to their context. (e.g., "The intensity suggests they feel a significant lack of control over...")
+2. **Actionable Growth**: How can the teacher fulfill the "Stated Hope"? Give a specific 1-min action the teacher can take today.
+3. **Observation**: If there was a cool-down, did it help? What does that tell the teacher about {{studentName}}'s self-regulation?
+4. **Tone**: Supportive, professional, and observant.
+
+**IMPORTANT**: Provide the report in both English and Chinese. Separate the languages with a newline.
+Example: "English paragraph analyzing the specific context and giving a clear tip.\n中文段落，深入分析学生情况并提供具体建议。"`,
 });
 
 const generateTeacherReportFlow = ai.defineFlow(

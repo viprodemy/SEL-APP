@@ -40,19 +40,30 @@ const prompt = ai.definePrompt({
   input: {schema: ProvideEmotionReframingInputSchema},
   output: {schema: ProvideEmotionReframingOutputSchema},
   model: 'googleai/gemma-4-31b-it',
-  prompt: `You are an AI assistant who creates a short, positive self-affirmation statement for a student. It should be something they can read to themselves to feel better. It must be in the first person ("I am...", "My feelings..."). Respond in JSON.
+  prompt: `You are an AI assistant who creates a short, highly personalized, positive self-affirmation statement for a student. 
+It should be something they can read to themselves to shift their perspective and feel empowered.
 
 Emotion: {{{emotion}}}
 Situation: {{{description}}}
 
-Based on the emotion and situation, generate a personalized, first-person reframing statement in both English and Chinese. Frame the feeling as a strength or a learning opportunity. Keep it concise.
+### YOUR TASK:
+Based on the specific emotion and situation, generate a personalized, first-person reframing statement in both English and Chinese. 
+It must be in the first person ("I am...", "My feelings...").
 
-Example:
-If emotion is "Sad" and situation is "I failed my test", a good response would be:
-EN: "My sadness about the test shows how much I care. This feeling can be my fuel for next time."
-ZH: "这次考试的难过，正是我在乎的证明。这个感觉可以成为我下一次的动力。"
+CRITICAL: 
+- DO NOT use generic phrases like "I am strong". 
+- INSTEAD, connect the strength to the situation. 
+- Example: If they are sad about a broken toy: "My sadness shows how much I value my things. I can take this care and use it to fix it or treasure my other toys."
+- Keep it concise (1-2 sentences).
+- Frame the feeling as a strength, a sign of care, or a learning opportunity.
 
-Generate the response now.
+Generate the response in JSON:
+{
+  "reframingStatement": {
+    "en": "...",
+    "zh": "..."
+  }
+}
 `,
 });
 

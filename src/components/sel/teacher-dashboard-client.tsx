@@ -58,7 +58,7 @@ function generateReportHtml(checkIn: StudentCheckIn, aiReport: string) {
           
           <div class="meta-info">
             <p><strong>Student / 学生:</strong> ${checkIn.student}</p>
-            <p><strong>Date / 日期:</strong> ${format(new Date(checkIn.date), 'PPP p')}</p>
+            <p><strong>Date / 日期:</strong> ${new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kuala_Lumpur', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date(checkIn.date))}</p>
             <p><strong>Initial Emotion / 初始情绪:</strong> ${initialEmotion?.emoji} ${initialEmotion?.name.en} / ${initialEmotion?.name.zh}</p>
             <p><strong>Intensity / 强度:</strong> ${checkIn.intensity} / 10</p>
           </div>
@@ -269,6 +269,17 @@ export default function TeacherDashboardClient() {
     }
   }, [isAuthenticated]);
 
+  const klFormatter = useMemo(() => new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Kuala_Lumpur',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }), []);
+
   const filteredCheckins = useMemo(() => {
     if (!allCheckins) return [];
     let results = allCheckins;
@@ -415,7 +426,7 @@ export default function TeacherDashboardClient() {
                         </Avatar>
                         <div className='flex-1'>
                           <p className="text-black font-bold">{checkin.student}</p>
-                          <p className="text-sm font-normal text-muted-foreground">{format(new Date(checkin.date), 'PPP p')}</p>
+                          <p className="text-sm font-normal text-muted-foreground">{klFormatter.format(new Date(checkin.date))}</p>
                         </div>
                         <div className="flex items-center gap-2 pr-4">
                             <span className="text-3xl">{emotion?.emoji}</span>
@@ -448,6 +459,7 @@ export default function TeacherDashboardClient() {
                           <CheckinDetail icon={Smile} title="After Cool-down" title_zh="练习之后">
                             <div className="bg-white p-3 rounded border text-black text-left">
                                <p><strong>Emotion:</strong> {postCoolDownEmotion.name.en} (Intensity: {checkin.postCoolDownIntensity})</p>
+                          <p className="text-xs text-muted-foreground mt-2">Recorded at: {klFormatter.format(new Date(checkin.date))}</p>
                             </div>
                           </CheckinDetail>
                         )}

@@ -5,7 +5,7 @@ import type { Emotion } from '@/types';
 import { analyzeEmotionalState, type AnalyzeEmotionalStateOutput } from '@/ai/flows/analyze-emotional-state';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { BrainCircuit, Lightbulb, User, Users } from 'lucide-react';
+import { BrainCircuit, Lightbulb, User, Users, Loader2 } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
@@ -94,11 +94,11 @@ export default function StepDecoder({ onNext, onBack, emotion, description, need
       </CardHeader>
       <CardContent className="space-y-6 p-6 bg-primary/5">
         {isLoading ? (
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-3/4" />
-            <div className="space-y-3 pl-6">
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-5/6" />
+          <div className="space-y-4 py-8 flex flex-col items-center justify-center">
+            <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+            <div className="space-y-2 text-center">
+                <h3 className="text-xl font-bold text-primary">AI is analyzing... / AI 正在分析...</h3>
+                <p className="text-muted-foreground">Deeply exploring your feelings to give you the best advice. / 深入探索您的感受，为您提供最佳建议。</p>
             </div>
           </div>
         ) : error ? (

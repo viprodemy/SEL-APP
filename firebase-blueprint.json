@@ -24,6 +24,18 @@
         "postCoolDownIntensity": { "type": "number", "description": "The intensity level after cool-down." }
       },
       "required": ["student", "date", "emotion", "intensity"]
+    },
+    "AIQueue": {
+      "title": "AI Request Queue",
+      "description": "Used to limit concurrent AI processing for rate limiting.",
+      "type": "object",
+      "properties": {
+        "studentName": { "type": "string" },
+        "status": { "type": "string", "enum": ["waiting", "processing", "completed", "failed"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["studentName", "status", "createdAt"]
     }
   },
   "auth": {
@@ -33,6 +45,10 @@
     "/checkins/{checkinId}": {
       "schema": "StudentCheckIn",
       "description": "Collection of all student emotional check-ins."
+    },
+    "/ai_queue/{requestId}": {
+      "schema": "AIQueue",
+      "description": "Queue for limiting concurrent AI requests."
     }
   }
 }
