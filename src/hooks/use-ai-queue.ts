@@ -59,10 +59,10 @@ export function useAIQueue() {
            const waitingDocs = docs.filter(d => d.data().status === 'waiting');
            const myWaitingIndex = waitingDocs.findIndex(d => d.id === requestId);
            
-           // Concurrent limit is 50
-           if (currentActiveCount < 50) {
+           // Concurrent limit is 12 (to stay under 15 RPM limit)
+           if (currentActiveCount < 12) {
              // If I'm one of the ones that can fill the remaining spots
-             if (myWaitingIndex !== -1 && (currentActiveCount + myWaitingIndex < 50)) {
+             if (myWaitingIndex !== -1 && (currentActiveCount + myWaitingIndex < 12)) {
                updateDoc(requestRef, { 
                  status: 'processing',
                  updatedAt: serverTimestamp()
@@ -121,16 +121,20 @@ export function useAIQueue() {
       return;
     }
     if (!db) return;
+    
+    const currentId = requestId;
+    // Clear state early for better UX
+    setRequestId(null);
+    setStatus('idle');
+
     try {
-      await updateDoc(doc(db, 'ai_queue', requestId), {
+      await updateDoc(doc(db, 'ai_queue', currentId), {
         status: 'completed',
         updatedAt: serverTimestamp()
       });
     } catch (err) {
       console.error("Complete request failed:", err);
     }
-    setRequestId(null);
-    setStatus('idle');
   };
 
   const failRequest = async (error?: any) => {
@@ -140,8 +144,14 @@ export function useAIQueue() {
       return;
     }
     if (!db) return;
+
+    const currentId = requestId;
+    // Clear state early for better UX
+    setRequestId(null);
+    setStatus('idle');
+
     try {
-      await updateDoc(doc(db, 'ai_queue', requestId), {
+      await updateDoc(doc(db, 'ai_queue', currentId), {
         status: 'failed',
         error: error?.message || String(error),
         updatedAt: serverTimestamp()
@@ -149,8 +159,6 @@ export function useAIQueue() {
     } catch (err) {
       console.error("Fail request failed:", err);
     }
-    setRequestId(null);
-    setStatus('idle');
   };
 
   return {

@@ -71,7 +71,6 @@ export default function StepDecoder({ onNext, onBack, emotion, description, need
           needs,
         });
         setAnalysis(result);
-        onAnalysisDone(); // Release queue slot
       } catch (err: any) {
         console.error("Error getting AI analysis:", err);
         if (err.message?.includes('429')) {
@@ -81,6 +80,7 @@ export default function StepDecoder({ onNext, onBack, emotion, description, need
         }
       } finally {
         setIsLoading(false);
+        onAnalysisDone(); // Release queue slot regardless of success/fail to prevent stuck UI
       }
     }
     getAnalysis();
