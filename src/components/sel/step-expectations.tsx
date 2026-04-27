@@ -115,7 +115,7 @@ export default function StepExpectations({ onNext, onBack, needs, setNeeds, emot
       <CardContent className="p-6 md:p-10 space-y-8 md:space-y-10">
         <div className="space-y-4">
           <div className="flex flex-col gap-1">
-            <Label htmlFor="need" className="text-lg font-bold text-primary">What do you want? / 你想要什么？</Label>
+            <Label htmlFor="need" className="text-lg font-bold text-foreground">What do you want? / 你想要什么？</Label>
           </div>
           <div className="relative group">
             <Textarea 
@@ -140,7 +140,7 @@ export default function StepExpectations({ onNext, onBack, needs, setNeeds, emot
 
         <div className="space-y-4">
           <div className="flex flex-col gap-1">
-            <Label htmlFor="hope" className="text-lg font-bold text-primary">What do you expect from others? / 你希望别人怎样？</Label>
+            <Label htmlFor="hope" className="text-lg font-bold text-foreground">What do you expect from others? / 你希望别人怎样？</Label>
           </div>
           <div className="relative group">
             <Textarea 
@@ -165,7 +165,7 @@ export default function StepExpectations({ onNext, onBack, needs, setNeeds, emot
 
         <div className="space-y-4">
           <div className="flex flex-col gap-1">
-            <Label htmlFor="selfCare" className="text-lg font-bold text-primary">What can you do now? / 你现在可以做什么？</Label>
+            <Label htmlFor="selfCare" className="text-lg font-bold text-foreground">What can you do now? / 你现在可以做什么？</Label>
           </div>
           <div className="relative group">
             <Textarea 

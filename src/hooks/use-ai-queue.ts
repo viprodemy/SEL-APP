@@ -93,37 +93,62 @@ export function useAIQueue() {
 
   const joinQueue = async (studentName: string) => {
     if (!db) {
-       console.error("Firestore not initialized");
-       return null;
+       console.warn("Firestore not initialized, bypassing queue.");
+       setStatus('processing');
+       return 'bypass-id';
     }
-    const docRef = await addDoc(collection(db, 'ai_queue'), {
-      studentName,
-      status: 'waiting',
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    });
-    setRequestId(docRef.id);
-    setStatus('waiting');
-    return docRef.id;
+    try {
+      const docRef = await addDoc(collection(db, 'ai_queue'), {
+        studentName,
+        status: 'waiting',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      setRequestId(docRef.id);
+      setStatus('waiting');
+      return docRef.id;
+    } catch (err) {
+      console.error("Failed to join queue:", err);
+      setStatus('processing'); // Fail-safe: let them proceed
+      return 'fail-safe-id';
+    }
   };
 
   const completeRequest = async () => {
-    if (!db || !requestId) return;
-    await updateDoc(doc(db, 'ai_queue', requestId), {
-      status: 'completed',
-      updatedAt: serverTimestamp()
-    });
+    if (!requestId || requestId.startsWith('bypass') || requestId.startsWith('fail-safe')) {
+      setStatus('idle');
+      setRequestId(null);
+      return;
+    }
+    if (!db) return;
+    try {
+      await updateDoc(doc(db, 'ai_queue', requestId), {
+        status: 'completed',
+        updatedAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error("Complete request failed:", err);
+    }
     setRequestId(null);
     setStatus('idle');
   };
 
   const failRequest = async (error?: any) => {
-    if (!db || !requestId) return;
-    await updateDoc(doc(db, 'ai_queue', requestId), {
-      status: 'failed',
-      error: error?.message || String(error),
-      updatedAt: serverTimestamp()
-    });
+    if (!requestId || requestId.startsWith('bypass') || requestId.startsWith('fail-safe')) {
+      setStatus('idle');
+      setRequestId(null);
+      return;
+    }
+    if (!db) return;
+    try {
+      await updateDoc(doc(db, 'ai_queue', requestId), {
+        status: 'failed',
+        error: error?.message || String(error),
+        updatedAt: serverTimestamp()
+      });
+    } catch (err) {
+      console.error("Fail request failed:", err);
+    }
     setRequestId(null);
     setStatus('idle');
   };

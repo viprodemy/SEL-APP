@@ -5,7 +5,7 @@ import type { Emotion } from '@/types';
 import { analyzeEmotionalState, type AnalyzeEmotionalStateOutput } from '@/ai/flows/analyze-emotional-state';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { BrainCircuit, Lightbulb, User, Users, Loader2 } from 'lucide-react';
+import { BrainCircuit, Lightbulb, User, Users, Loader2, Sparkles } from 'lucide-react';
 import { Skeleton } from '../ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
@@ -36,17 +36,17 @@ const InfoCard = ({ icon, title, content_en, content_zh, isList = false }: { ico
                 </ul>
             );
         }
-        return <p className="text-black whitespace-pre-line">{content}</p>;
+        return <p className="text-foreground whitespace-pre-line">{content}</p>;
     }
 
     return (
-        <div className="bg-card/50 p-4 rounded-xl border border-primary-foreground/10 text-left">
+        <div className="bg-card/50 p-4 rounded-xl border border-primary/20 text-left">
             <h3 className="font-bold flex items-center gap-2 mb-2 text-primary">
                 <Icon className="w-5 h-5" />
                 {title}
             </h3>
-            <div className="text-black">{renderContent(content_en)}</div>
-            <div className="text-sm text-black/70 mt-1">{renderContent(content_zh)}</div>
+            <div className="text-foreground font-medium">{renderContent(content_en)}</div>
+            <div className="text-sm text-foreground/80 mt-1 font-medium">{renderContent(content_zh)}</div>
         </div>
     )
 }
@@ -93,7 +93,7 @@ export default function StepDecoder({ onNext, onBack, emotion, description, need
           <BrainCircuit className="w-8 h-8 md:w-10 md:h-10" />
           Emotion Decoder / 情绪解码器
         </CardTitle>
-        <p className="text-muted-foreground font-medium">Let's explore this feeling together. / 让我们一起探索这种感觉。</p>
+        <p className="text-foreground font-semibold">Let's explore this feeling together. / 让我们一起探索这种感觉。</p>
       </CardHeader>
       <CardContent className="p-4 md:p-10 space-y-6 md:space-y-10">
         {isLoading ? (
@@ -113,8 +113,8 @@ export default function StepDecoder({ onNext, onBack, emotion, description, need
           analysis && (
             <div className="space-y-6 md:space-y-8">
                 <div className="p-6 bg-primary/5 rounded-3xl border-2 border-primary/10 text-left">
-                    <p className="font-bold text-primary text-lg md:text-xl leading-relaxed">{analysis.understanding.en}</p>
-                    <p className="text-primary/70 mt-3 font-medium">{analysis.understanding.zh}</p>
+                    <p className="font-bold text-foreground text-lg md:text-xl leading-relaxed">{analysis.understanding.en}</p>
+                    <p className="text-foreground/80 mt-3 font-semibold">{analysis.understanding.zh}</p>
                 </div>
                 
                 <InfoCard 

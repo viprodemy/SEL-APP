@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
 
 interface StepPostCoolDownEmotionProps {
   onNext: () => void;
@@ -31,16 +30,13 @@ export default function StepPostCoolDownEmotion({
         <CardTitle className="font-headline text-3xl md:text-4xl font-bold tracking-tight text-center text-primary">
             After the exercise, how are you feeling now?
         </CardTitle>
-        <p className="text-muted-foreground mt-2 text-center">练习过后，你现在感觉如何？</p>
+        <p className="text-foreground mt-2 text-center font-semibold">练习过后，你现在感觉如何？</p>
       </CardHeader>
       <CardContent className="p-6 md:p-8">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
           {emotions.map((emotion, index) => (
-            <motion.div
+            <div
               key={emotion.id}
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              whileTap={{ scale: 0.9 }}
-              transition={{ type: 'spring', stiffness: 300 }}
             >
               <Card
                 onClick={() => setSelectedEmotion(emotion)}
@@ -56,18 +52,18 @@ export default function StepPostCoolDownEmotion({
                 >
                     {emotion.emoji}
                 </div>
-                <p className="text-sm font-medium text-center leading-tight">{emotion.name.en}</p>
-                <p className="text-xs font-medium text-center leading-tight text-muted-foreground">{emotion.name.zh}</p>
+                <p className="text-sm font-bold text-center leading-tight text-foreground">{emotion.name.en}</p>
+                <p className="text-xs font-semibold text-center leading-tight text-foreground/70">{emotion.name.zh}</p>
               </Card>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {selectedEmotion && (
           <div className="space-y-4 animate-in fade-in duration-500">
-            <h3 className="text-center text-lg font-medium text-foreground">
-                How strong is this feeling? <span className="text-muted-foreground">(0-10)</span>
-                <p className="text-muted-foreground text-sm">这个感觉有多强烈？ (0-10)</p>
+            <h3 className="text-center text-lg font-bold text-foreground">
+                How strong is this feeling? <span className="text-primary/50">(0-10)</span>
+                <p className="text-foreground/80 text-sm font-semibold">这个感觉有多强烈？ (0-10)</p>
             </h3>
             <div className="flex items-center gap-4 max-w-md mx-auto">
               <span className="text-4xl">{selectedEmotion.emoji}</span>
@@ -77,7 +73,7 @@ export default function StepPostCoolDownEmotion({
                 max={10}
                 step={1}
               />
-              <span className="text-2xl font-bold w-10 text-center">{intensity}</span>
+              <span className="text-2xl font-bold w-10 text-center text-foreground">{intensity}</span>
             </div>
           </div>
         )}

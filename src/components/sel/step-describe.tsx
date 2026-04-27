@@ -91,18 +91,18 @@ export default function StepDescribe({ onNext, onBack, description, setDescripti
           <span className="text-4xl md:text-5xl">{emotion?.emoji}</span>
           Let's Hear You Out / 你说给我听
         </CardTitle>
-        <div className="text-muted-foreground font-medium">
+        <div className="text-foreground font-semibold">
           <p>Use simple sentences to write down what happened.</p>
           <p>用简单的句子写下事情的经过。</p>
         </div>
       </CardHeader>
       <CardContent className="p-6 md:p-10 space-y-6 md:space-y-8">
         <div className="p-4 md:p-6 bg-accent/10 rounded-2xl border-2 border-accent/20">
-            <p className="font-bold text-accent-foreground leading-relaxed">
+            <p className="font-bold text-foreground leading-relaxed">
             Recall the moment using your five senses — 
             what did you see, hear, smell, taste, or feel?
             </p>
-            <p className="text-sm text-accent-foreground/60 mt-2 font-medium">
+            <p className="text-sm text-foreground/80 mt-2 font-semibold">
             用视觉、听觉、嗅觉、味觉、触觉回想触发情绪的情境。
             </p>
         </div>

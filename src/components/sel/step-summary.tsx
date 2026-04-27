@@ -27,23 +27,23 @@ export default function StepSummary({ onRestart, checkInData }: StepSummaryProps
           <CardTitle className="font-headline text-3xl md:text-5xl font-extrabold text-primary leading-tight">
             Check-in Complete!
             <br />
-            <span className="text-2xl md:text-3xl opacity-80">签到完成！</span>
+            <span className="text-2xl md:text-3xl text-foreground font-bold">签到完成！</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="p-8 md:p-12 space-y-8">
-          <div className="text-xl md:text-2xl font-medium text-primary leading-relaxed text-center sm:text-left">
+          <div className="text-xl md:text-2xl font-medium text-foreground leading-relaxed text-center sm:text-left">
             <div className="p-6 bg-primary/5 rounded-2xl border-l-4 border-primary">
                 <p>
-                    Well done, <span className="font-bold underline text-primary">{checkInData.student}</span>! You've taken a moment to understand your feeling of <span className="font-bold text-accent-foreground">{initialEmotion?.name.en} ({initialEmotion?.emoji})</span>.
+                    Well done, <span className="font-bold underline text-primary">{checkInData.student}</span>! You've taken a moment to understand your feeling of <span className="font-bold text-primary">{initialEmotion?.name.en} ({initialEmotion?.emoji})</span>.
                     {finalEmotion && (
                     <>
-                        {' '}After the cool-down, it's great that you're now feeling <span className="font-bold text-accent-foreground">{finalEmotion.name.en} ({finalEmotion.emoji})</span>.
+                        {' '}After the cool-down, it's great that you're now feeling <span className="font-bold text-primary">{finalEmotion.name.en} ({finalEmotion.emoji})</span>.
                     </>
                     )}
                 </p>
             </div>
-            <div className="p-6 mt-6 bg-muted/30 rounded-2xl">
-                <p className="text-lg md:text-xl text-muted-foreground italic">
+            <div className="p-6 mt-6 bg-secondary/20 rounded-2xl border border-secondary">
+                <p className="text-lg md:text-xl text-foreground italic font-semibold">
                     干得好，<span className="font-bold">{checkInData.student}</span>！你花了一些时间来了解你的 <span className="font-bold">{initialEmotion?.name.zh} ({initialEmotion?.emoji})</span> 情绪。
                     {finalEmotion && (
                     <>

@@ -430,8 +430,8 @@ export default function TeacherDashboardClient() {
                           <AvatarFallback className="text-2xl font-bold bg-primary/10">{checkin.student.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div className='flex-1 space-y-1'>
-                          <p className="text-xl md:text-2xl font-black text-primary">{checkin.student}</p>
-                          <p className="text-base md:text-lg font-medium text-muted-foreground flex items-center gap-2">
+                          <p className="text-xl md:text-2xl font-black text-foreground">{checkin.student}</p>
+                          <p className="text-base md:text-lg font-medium text-foreground/70 flex items-center gap-2">
                               <CalendarIcon className="w-4 h-4" />
                               {klFormatter.format(new Date(checkin.date))}
                           </p>
@@ -495,8 +495,8 @@ export default function TeacherDashboardClient() {
                                 <div className="flex items-center gap-4 mb-2">
                                     <span className="text-5xl">{postCoolDownEmotion.emoji}</span>
                                     <div>
-                                        <p className="font-bold text-accent-foreground text-xl">{postCoolDownEmotion.name.en}</p>
-                                        <p className="text-accent-foreground/60 text-sm font-bold uppercase tracking-widest">Post Cool-down</p>
+                                        <p className="font-bold text-foreground text-xl">{postCoolDownEmotion.name.en}</p>
+                                        <p className="text-foreground/60 text-sm font-bold uppercase tracking-widest">Post Cool-down</p>
                                     </div>
                                 </div>
                                 <p className="font-bold text-primary mt-4 py-2 border-t border-accent/10">

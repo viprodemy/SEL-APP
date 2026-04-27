@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { User, Lock, Loader2, AlertCircle } from 'lucide-react';
-import { motion } from 'motion/react';
 
 export default function LoginForm() {
   const [username, setUsername] = useState('');
@@ -31,11 +30,7 @@ export default function LoginForm() {
   };
 
   return (
-    <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md mx-auto px-4"
-    >
+    <div className="w-full max-w-md mx-auto px-4">
       <Card className="shadow-2xl rounded-3xl overflow-hidden border-2 border-primary/10">
         <CardHeader className="bg-primary/5 p-8 text-center">
           <CardTitle className="text-3xl font-headline font-extrabold text-primary">Login / 登入</CardTitle>
@@ -105,6 +100,6 @@ export default function LoginForm() {
         Contact your teacher if you forgot your password.<br />
         如果忘记密码值，请联系老师。
       </p>
-    </motion.div>
+    </div>
   );
 }

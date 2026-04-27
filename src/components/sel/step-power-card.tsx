@@ -6,22 +6,23 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { powerCards } from '@/lib/data';
 import { Sparkles } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 interface StepPowerCardProps {
   onNext: () => void;
   onBack: () => void;
   emotion: Emotion | null;
+  aiAffirmation?: { en: string; zh: string } | null;
 }
 
-export default function StepPowerCard({ onNext, onBack, emotion }: StepPowerCardProps) {
+export default function StepPowerCard({ onNext, onBack, emotion, aiAffirmation }: StepPowerCardProps) {
   const [isDrawn, setIsDrawn] = useState(false);
 
   const affirmation = useMemo(() => {
+    if (aiAffirmation) return aiAffirmation;
     if (!emotion || !powerCards[emotion.id]) return null;
     const cards = powerCards[emotion.id];
     return cards[Math.floor(Math.random() * cards.length)];
-  }, [emotion]);
+  }, [emotion, aiAffirmation]);
 
   const handleDrawCard = () => {
     setIsDrawn(true);
@@ -36,30 +37,23 @@ export default function StepPowerCard({ onNext, onBack, emotion }: StepPowerCard
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center min-h-[300px] p-8">
         {!isDrawn ? (
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
+          <div>
             <Button onClick={handleDrawCard} size="lg" className="btn-glossy text-2xl h-auto py-4">
               抽卡 (Draw a Card)
             </Button>
-          </motion.div>
+          </div>
         ) : (
           affirmation && (
-            <motion.div
-              initial={{ rotateY: -90, opacity: 0 }}
-              animate={{ rotateY: 0, opacity: 1 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
+            <div
               className="w-full max-w-md p-8 bg-accent/10 border-2 border-accent rounded-2xl shadow-2xl relative"
-              style={{ perspective: '1000px' }}
             >
               <Sparkles className="absolute top-4 left-4 w-8 h-8 text-yellow-400" />
               <Sparkles className="absolute bottom-4 right-4 w-8 h-8 text-yellow-400" />
               <div className="text-left space-y-4">
-                <p className="text-2xl font-bold text-black">{affirmation.en}</p>
-                <p className="text-xl font-medium text-black">{affirmation.zh}</p>
+                <p className="text-2xl font-bold text-foreground">{affirmation.en}</p>
+                <p className="text-xl font-semibold text-foreground">{affirmation.zh}</p>
               </div>
-            </motion.div>
+            </div>
           )
         )}
       </CardContent>

@@ -51,7 +51,7 @@ export default function StepReframing({ onNext, onBack, emotion, description, is
           <Sparkles className="w-8 h-8 md:w-10 md:h-10" />
           Positive Reframing / 正向思考
         </CardTitle>
-        <p className="text-muted-foreground font-medium">Let's turn this feeling into a strength. / 让我们把这种感觉变成一种力量。</p>
+        <p className="text-foreground font-semibold">Let's turn this feeling into a strength. / 让我们把这种感觉变成一种力量。</p>
       </CardHeader>
       <CardContent className="p-6 md:p-10">
         {isLoading ? (
@@ -59,15 +59,15 @@ export default function StepReframing({ onNext, onBack, emotion, description, is
             <Loader2 className="w-12 h-12 md:w-16 md:h-16 text-primary animate-spin mb-4" />
             <div className="space-y-2 text-center">
                 <h3 className="text-xl md:text-2xl font-bold text-primary animate-pulse">Positive Reframing... / 正向思考中...</h3>
-                <p className="text-muted-foreground max-w-xs mx-auto">Finding a way to turn this feeling into a positive strength.</p>
+                <p className="text-foreground font-medium max-w-xs mx-auto">Finding a way to turn this feeling into a positive strength.</p>
             </div>
           </div>
         ) : (
           statement && (
             <div className="bg-accent/10 border-l-4 border-accent p-8 rounded-2xl shadow-inner animate-in zoom-in duration-500">
-                <p className="text-2xl md:text-3xl font-bold text-primary leading-tight">{statement.en}</p>
+                <p className="text-2xl md:text-3xl font-bold text-foreground leading-tight">{statement.en}</p>
                 <div className="h-px bg-accent/20 my-6"></div>
-                <p className="text-xl md:text-2xl text-accent-foreground font-medium">{statement.zh}</p>
+                <p className="text-xl md:text-2xl text-foreground font-semibold">{statement.zh}</p>
             </div>
           )
         )}

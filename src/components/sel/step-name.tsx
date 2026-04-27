@@ -30,11 +30,11 @@ export default function StepName({ onNext, studentName, setStudentName, checkInD
         <CardTitle className="font-headline text-3xl md:text-4xl flex items-center gap-3 text-primary justify-center font-bold">
           Let's Get Started!
         </CardTitle>
-        <p className="text-muted-foreground font-medium mt-1">准备开始！</p>
+        <p className="text-foreground font-semibold mt-1">准备开始！</p>
       </CardHeader>
       <CardContent className="p-6 md:p-10 space-y-6 md:space-y-10">
         <div className="space-y-4">
-          <Label htmlFor="name" className="text-lg md:text-xl font-bold text-center block text-primary">
+          <Label htmlFor="name" className="text-lg md:text-xl font-bold text-center block text-foreground">
             My name is... / 我的名字是...
           </Label>
           <div className="flex items-center gap-3 bg-white p-1 rounded-full border-2 border-primary/20 focus-within:border-primary transition-colors pr-4">
@@ -50,37 +50,9 @@ export default function StepName({ onNext, studentName, setStudentName, checkInD
             />
           </div>
         </div>
-        <div className="space-y-4">
-            <Label htmlFor="date" className="text-lg md:text-xl font-bold text-center block text-primary">
-                Today is... / 今天的日期是...
-            </Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-full justify-center text-left font-medium text-lg h-12 md:h-14 rounded-full border-2 border-primary/10 hover:border-primary/30 transition-all",
-                    !checkInDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-3 h-5 w-5 text-primary" />
-                  {checkInDate ? format(checkInDate, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 rounded-3xl overflow-hidden shadow-2xl" align="center">
-                <Calendar
-                  mode="single"
-                  selected={checkInDate}
-                  onSelect={setCheckInDate}
-                  initialFocus
-                  className="rounded-3xl"
-                />
-              </PopoverContent>
-            </Popover>
-        </div>
       </CardContent>
       <CardFooter className="flex justify-center p-6 md:p-8 bg-muted/20">
-        <Button onClick={onNext} disabled={!studentName.trim() || !checkInDate} size="lg" className="w-full md:w-auto px-12 h-14 rounded-full text-lg font-bold btn-glossy shadow-xl">
+        <Button onClick={onNext} disabled={!studentName.trim()} size="lg" className="w-full md:w-auto px-12 h-14 rounded-full text-lg font-bold btn-glossy shadow-xl">
           Start Check-in / 开始签到
         </Button>
       </CardFooter>

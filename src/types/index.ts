@@ -56,6 +56,7 @@ export interface StudentCheckIn {
     };
     postCoolDownEmotion?: string; // emotionId
     postCoolDownIntensity?: number;
+    loggedInUser?: string;
   }
   
 export interface PowerCard {

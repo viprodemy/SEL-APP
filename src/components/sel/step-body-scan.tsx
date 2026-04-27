@@ -90,10 +90,10 @@ export default function StepBodyScan({ onNext, onBack, emotion, bodyScan, setBod
             </div>
             <div className="space-y-6 md:w-full">
                 <div className="bg-primary/5 p-6 rounded-2xl border-l-4 border-primary">
-                    <p className="text-lg md:text-xl font-bold text-primary">
+                    <p className="text-lg md:text-xl font-bold text-foreground">
                     Close your eyes for a moment. Where in your body do you feel the emotion?
                     </p>
-                    <p className="text-sm text-muted-foreground mt-2 font-medium">闭上眼睛，感受一下，情绪在你身体的哪个部位？</p>
+                    <p className="text-sm text-foreground/80 mt-2 font-semibold">闭上眼睛，感受一下，情绪在你身体的哪个部位？</p>
                 </div>
                 
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -104,8 +104,8 @@ export default function StepBodyScan({ onNext, onBack, emotion, bodyScan, setBod
                             onClick={() => handlePartClick(part)}
                             className="h-auto py-3 px-2 flex flex-col text-xs md:text-sm hover:border-primary hover:bg-primary/5 rounded-xl border-2"
                         >
-                            <span className="font-bold">{part.name.en}</span>
-                            <span className="text-[10px] opacity-70 font-medium">{part.name.zh}</span>
+                            <span className="font-bold text-foreground">{part.name.en}</span>
+                            <span className="text-[10px] text-foreground/70 font-semibold">{part.name.zh}</span>
                         </Button>
                     ))}
                 </div>
@@ -114,7 +114,7 @@ export default function StepBodyScan({ onNext, onBack, emotion, bodyScan, setBod
 
         {bodyScan.length > 0 && (
             <div className="w-full pt-8 border-t-2 border-dashed border-primary/20">
-                <h3 className="text-center font-bold text-primary mb-4 flex items-center justify-center gap-2">
+                <h3 className="text-center font-bold text-foreground mb-4 flex items-center justify-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-primary"></span>
                     Your Selections / 已选中的感觉:
                 </h3>
