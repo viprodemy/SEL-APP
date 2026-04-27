@@ -70,34 +70,42 @@ export default function StepBodyScan({ onNext, onBack, emotion, bodyScan, setBod
 
 
   return (
-    <Card className="shadow-lg">
-      <CardHeader>
-        <CardTitle className="font-headline text-3xl flex items-center gap-4">
-          <span className="text-5xl">{emotion?.emoji}</span>
+    <Card className="shadow-2xl w-full max-w-3xl mx-auto overflow-hidden rounded-3xl">
+      <CardHeader className="p-6 md:p-10 bg-primary/5">
+        <CardTitle className="font-headline text-2xl md:text-3xl flex items-center gap-4 text-primary leading-tight font-bold">
+          <span className="text-4xl md:text-5xl">{emotion?.emoji}</span>
           Feel Your Body / 感受身体
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col items-center justify-center gap-8 p-4 md:p-8">
-        <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="w-full max-w-xs">
+      <CardContent className="flex flex-col items-center gap-8 p-6 md:p-10">
+        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 w-full">
+            <div className="w-full max-w-[280px] lg:max-w-xs bg-white p-4 rounded-3xl border-2 border-primary/10 shadow-inner">
                 <Image 
                     src="https://i.postimg.cc/R0Ybb2gH/Whats-App-Image-2025-11-05-at-11-56-41.jpg" 
                     alt="Body Scan Guide" 
                     width={400} 
                     height={600} 
-                    className="rounded-lg object-contain"
+                    className="rounded-2xl object-contain w-full"
                 />
             </div>
-            <div className="space-y-4 text-center md:text-left md:w-2/3">
-                <p className="text-lg font-medium text-foreground">
-                Close your eyes for a moment. Where in your body do you feel the emotion?
-                <br />
-                <span className="text-sm text-muted-foreground">闭上眼睛，感受一下，情绪在你身体的哪个部位？</span>
-                </p>
-                <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+            <div className="space-y-6 md:w-full">
+                <div className="bg-primary/5 p-6 rounded-2xl border-l-4 border-primary">
+                    <p className="text-lg md:text-xl font-bold text-primary">
+                    Close your eyes for a moment. Where in your body do you feel the emotion?
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2 font-medium">闭上眼睛，感受一下，情绪在你身体的哪个部位？</p>
+                </div>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {bodyParts.map(part => (
-                        <Button key={part.id} variant="outline" onClick={() => handlePartClick(part)}>
-                            {part.name.en} / {part.name.zh}
+                        <Button 
+                            key={part.id} 
+                            variant="outline" 
+                            onClick={() => handlePartClick(part)}
+                            className="h-auto py-3 px-2 flex flex-col text-xs md:text-sm hover:border-primary hover:bg-primary/5 rounded-xl border-2"
+                        >
+                            <span className="font-bold">{part.name.en}</span>
+                            <span className="text-[10px] opacity-70 font-medium">{part.name.zh}</span>
                         </Button>
                     ))}
                 </div>
@@ -105,14 +113,17 @@ export default function StepBodyScan({ onNext, onBack, emotion, bodyScan, setBod
         </div>
 
         {bodyScan.length > 0 && (
-            <div className="w-full pt-4 border-t">
-                <h3 className="text-center font-semibold mb-2">Your Selections:</h3>
+            <div className="w-full pt-8 border-t-2 border-dashed border-primary/20">
+                <h3 className="text-center font-bold text-primary mb-4 flex items-center justify-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-primary"></span>
+                    Your Selections / 已选中的感觉:
+                </h3>
                 <div className="flex flex-wrap gap-2 justify-center">
                     {bodyScan.map((selection, index) => (
-                        <Badge key={index} variant="secondary" className="text-base py-1 pl-3 pr-2">
+                        <Badge key={index} variant="secondary" className="text-sm md:text-base py-2 pl-4 pr-2 rounded-full border border-primary/20 bg-white text-primary font-medium">
                             {selection}
-                            <button onClick={() => removeSelection(selection)} className="ml-2 rounded-full hover:bg-black/20 p-0.5">
-                                <X className="h-3 w-3" />
+                            <button onClick={() => removeSelection(selection)} className="ml-3 rounded-full hover:bg-primary/10 p-1 text-primary">
+                                <X className="h-4 w-4" />
                             </button>
                         </Badge>
                     ))}

@@ -16,39 +16,47 @@ export default function StepSummary({ onRestart, checkInData }: StepSummaryProps
   const finalEmotion = emotions.find(e => e.id === checkInData.postCoolDownEmotion);
 
   return (
-    <div className="space-y-6">
-      <Card className="shadow-lg animate-in fade-in duration-300 text-left">
-        <CardHeader className="items-center text-center">
-          <div className="flex justify-center mb-4">
-            <PartyPopper className="w-16 h-16 text-primary" />
+    <div className="space-y-8 w-full max-w-2xl mx-auto px-4">
+      <Card className="shadow-2xl overflow-hidden rounded-3xl animate-in zoom-in duration-500 text-center border-2 border-primary/10">
+        <CardHeader className="bg-primary/5 p-8 md:p-12">
+          <div className="flex justify-center mb-6">
+            <div className="bg-white p-6 rounded-full shadow-lg border-2 border-primary/10">
+                <PartyPopper className="w-16 h-16 md:w-20 md:h-20 text-primary animate-bounce" />
+            </div>
           </div>
-          <CardTitle className="font-headline text-4xl">
-            Check-in Complete! / 签到完成！
+          <CardTitle className="font-headline text-3xl md:text-5xl font-extrabold text-primary leading-tight">
+            Check-in Complete!
+            <br />
+            <span className="text-2xl md:text-3xl opacity-80">签到完成！</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6 pb-8">
-          <div className="text-lg text-black max-w-md mx-auto text-left">
-            <p>
-                Well done, {checkInData.student}! You've taken a moment to understand your feeling of <span className="font-semibold">{initialEmotion?.name.en} ({initialEmotion?.name.zh})</span>.
-                {finalEmotion && (
-                <>
-                    {' '}After the cool-down, it's great that you're now feeling <span className="font-semibold">{finalEmotion.name.en} ({finalEmotion.name.zh})</span>.
-                </>
-                )}
-            </p>
-            <p className="text-base mt-2 text-black/80">
-                干得好，{checkInData.student}！你花了一些时间来了解你的 <span className="font-semibold">{initialEmotion?.name.zh} ({initialEmotion?.name.en})</span> 的感觉。
-                {finalEmotion && (
-                <>
-                    {' '}冷静下来之后，你现在感觉 <span className="font-semibold">{finalEmotion.name.zh} ({finalEmotion.name.en})</span>，这太棒了。
-                </>
-                )}
-            </p>
+        <CardContent className="p-8 md:p-12 space-y-8">
+          <div className="text-xl md:text-2xl font-medium text-primary leading-relaxed text-center sm:text-left">
+            <div className="p-6 bg-primary/5 rounded-2xl border-l-4 border-primary">
+                <p>
+                    Well done, <span className="font-bold underline text-primary">{checkInData.student}</span>! You've taken a moment to understand your feeling of <span className="font-bold text-accent-foreground">{initialEmotion?.name.en} ({initialEmotion?.emoji})</span>.
+                    {finalEmotion && (
+                    <>
+                        {' '}After the cool-down, it's great that you're now feeling <span className="font-bold text-accent-foreground">{finalEmotion.name.en} ({finalEmotion.emoji})</span>.
+                    </>
+                    )}
+                </p>
+            </div>
+            <div className="p-6 mt-6 bg-muted/30 rounded-2xl">
+                <p className="text-lg md:text-xl text-muted-foreground italic">
+                    干得好，<span className="font-bold">{checkInData.student}</span>！你花了一些时间来了解你的 <span className="font-bold">{initialEmotion?.name.zh} ({initialEmotion?.emoji})</span> 情绪。
+                    {finalEmotion && (
+                    <>
+                        {' '}冷静下来之后，你现在感觉 <span className="font-bold">{finalEmotion.name.zh} ({finalEmotion.emoji})</span>，这太棒了。
+                    </>
+                    )}
+                </p>
+            </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={onRestart} className="w-full sm:w-auto btn-glossy">
-              <Repeat className="mr-2 h-4 w-4" />
-              Start a New Check-in / 开始新的签到
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+            <Button size="lg" onClick={onRestart} className="w-full sm:w-auto h-16 rounded-full px-10 text-lg font-bold btn-glossy shadow-xl">
+              <Repeat className="mr-3 h-6 w-6" />
+              New Check-in / 新的签到
             </Button>
           </div>
         </CardContent>

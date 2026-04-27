@@ -87,34 +87,34 @@ export default function StepDecoder({ onNext, onBack, emotion, description, need
   }, [emotion, description, needs, isQueueProcessing, onAnalysisDone]);
 
   return (
-    <Card className="shadow-lg">
-      <CardHeader>
-        <CardTitle className="font-headline text-3xl flex items-center gap-4">
-          <BrainCircuit className="w-10 h-10 text-primary" />
+    <Card className="shadow-2xl w-full max-w-4xl mx-auto overflow-hidden rounded-3xl">
+      <CardHeader className="p-6 md:p-10 bg-primary/5">
+        <CardTitle className="font-headline text-2xl md:text-3xl flex items-center gap-4 text-primary leading-tight font-bold">
+          <BrainCircuit className="w-8 h-8 md:w-10 md:h-10" />
           Emotion Decoder / 情绪解码器
         </CardTitle>
-        <p className="text-muted-foreground">Let's explore this feeling together. / 让我们一起探索这种感觉。</p>
+        <p className="text-muted-foreground font-medium">Let's explore this feeling together. / 让我们一起探索这种感觉。</p>
       </CardHeader>
-      <CardContent className="space-y-6 p-6 bg-primary/5">
+      <CardContent className="p-4 md:p-10 space-y-6 md:space-y-10">
         {isLoading ? (
-          <div className="space-y-4 py-8 flex flex-col items-center justify-center">
-            <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+          <div className="space-y-4 py-12 flex flex-col items-center justify-center">
+            <Loader2 className="w-12 h-12 md:w-16 md:h-16 text-primary animate-spin mb-4" />
             <div className="space-y-2 text-center">
-                <h3 className="text-xl font-bold text-primary">AI is analyzing... / AI 正在分析...</h3>
-                <p className="text-muted-foreground">Deeply exploring your feelings to give you the best advice. / 深入探索您的感受，为您提供最佳建议。</p>
+                <h3 className="text-xl md:text-2xl font-bold text-primary animate-pulse">AI is analyzing... / AI 正在分析...</h3>
+                <p className="text-muted-foreground max-w-xs mx-auto">Deeply exploring your feelings to give you the best advice.</p>
             </div>
           </div>
         ) : error ? (
-            <div className="p-4 bg-destructive/10 border-l-4 border-destructive text-destructive-foreground text-left">
-                <p className="font-semibold text-black">Notice / 提示</p>
-                <p className="text-black">{error}</p>
+            <div className="p-6 bg-destructive/10 border-l-4 border-destructive text-destructive-foreground text-left rounded-r-2xl">
+                <p className="font-bold text-lg mb-1">Notice / 提示</p>
+                <p className="font-medium">{error}</p>
             </div>
         ) : (
           analysis && (
-            <div className="space-y-4">
-                <div className="p-4 rounded-lg text-left">
-                    <p className="font-semibold text-black text-lg">{analysis.understanding.en}</p>
-                    <p className="text-black/80 mt-1">{analysis.understanding.zh}</p>
+            <div className="space-y-6 md:space-y-8">
+                <div className="p-6 bg-primary/5 rounded-3xl border-2 border-primary/10 text-left">
+                    <p className="font-bold text-primary text-lg md:text-xl leading-relaxed">{analysis.understanding.en}</p>
+                    <p className="text-primary/70 mt-3 font-medium">{analysis.understanding.zh}</p>
                 </div>
                 
                 <InfoCard 
@@ -126,14 +126,14 @@ export default function StepDecoder({ onNext, onBack, emotion, description, need
                 />
                 
                 <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="item-1" className="border-t border-primary-foreground/10 pt-2">
-                    <AccordionTrigger className="text-base font-semibold text-primary hover:no-underline">
-                        <div className="flex items-center gap-2">
-                            <Users className="w-5 h-5" />
+                  <AccordionItem value="item-1" className="border-t-2 border-dashed border-primary/10 pt-4">
+                    <AccordionTrigger className="text-lg md:text-xl font-bold text-primary hover:no-underline py-4 px-2 hover:bg-primary/5 rounded-2xl transition-all">
+                        <div className="flex items-center gap-3">
+                            <Users className="w-6 h-6" />
                             For Teachers & Parents / 给老师和家长的建议
                         </div>
                     </AccordionTrigger>
-                    <AccordionContent className="space-y-4 pt-2">
+                    <AccordionContent className="space-y-6 pt-6">
                       <InfoCard 
                           icon={BrainCircuit}
                           title="Meaning of this Emotion / 情绪的意义"

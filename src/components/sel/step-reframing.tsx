@@ -45,28 +45,29 @@ export default function StepReframing({ onNext, onBack, emotion, description, is
   const isPositiveEmotion = emotion?.id === 'happy' || emotion?.id === 'proud';
 
   return (
-    <Card className="shadow-lg">
-      <CardHeader>
-        <CardTitle className="font-headline text-3xl flex items-center gap-4 text-left">
-          <Sparkles className="w-10 h-10 text-primary" />
+    <Card className="shadow-2xl w-full max-w-3xl mx-auto overflow-hidden rounded-3xl">
+      <CardHeader className="p-6 md:p-10 bg-primary/5">
+        <CardTitle className="font-headline text-2xl md:text-3xl flex items-center gap-4 text-primary leading-tight font-bold">
+          <Sparkles className="w-8 h-8 md:w-10 md:h-10" />
           Positive Reframing / 正向思考
         </CardTitle>
-        <p className="text-muted-foreground text-left">Let's turn this feeling into a strength. / 让我们把这种感觉变成一种力量。</p>
+        <p className="text-muted-foreground font-medium">Let's turn this feeling into a strength. / 让我们把这种感觉变成一种力量。</p>
       </CardHeader>
-      <CardContent className="space-y-4 text-left p-8">
+      <CardContent className="p-6 md:p-10">
         {isLoading ? (
           <div className="space-y-4 py-12 flex flex-col items-center justify-center">
-            <Loader2 className="w-12 h-12 text-primary animate-spin mb-4" />
+            <Loader2 className="w-12 h-12 md:w-16 md:h-16 text-primary animate-spin mb-4" />
             <div className="space-y-2 text-center">
-                <h3 className="text-xl font-bold text-primary">Positive Reframing... / 正向思考中...</h3>
-                <p className="text-muted-foreground">Finding a way to turn this feeling into a positive strength. / 寻找将这种感觉转化为正向力量的方法。</p>
+                <h3 className="text-xl md:text-2xl font-bold text-primary animate-pulse">Positive Reframing... / 正向思考中...</h3>
+                <p className="text-muted-foreground max-w-xs mx-auto">Finding a way to turn this feeling into a positive strength.</p>
             </div>
           </div>
         ) : (
           statement && (
-            <div className="bg-accent/10 border-l-4 border-accent p-6 rounded-lg text-left">
-                <p className="text-2xl font-semibold text-black">{statement.en}</p>
-                <p className="text-lg text-black mt-2">{statement.zh}</p>
+            <div className="bg-accent/10 border-l-4 border-accent p-8 rounded-2xl shadow-inner animate-in zoom-in duration-500">
+                <p className="text-2xl md:text-3xl font-bold text-primary leading-tight">{statement.en}</p>
+                <div className="h-px bg-accent/20 my-6"></div>
+                <p className="text-xl md:text-2xl text-accent-foreground font-medium">{statement.zh}</p>
             </div>
           )
         )}

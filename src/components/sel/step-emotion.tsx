@@ -27,23 +27,22 @@ export default function StepEmotion({
 }: StepEmotionProps) {
   return (
     <Card className="overflow-hidden shadow-2xl rounded-3xl animate-in fade-in duration-500">
-      <CardHeader>
-        <CardTitle className="font-headline text-3xl md:text-4xl font-bold tracking-tight text-center text-primary">
+      <CardHeader className="p-6 md:p-10">
+        <CardTitle className="font-headline text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-center text-primary leading-tight">
             What are you feeling right now?
         </CardTitle>
-        <p className="text-muted-foreground mt-2 text-center">你现在的情绪是什么？</p>
+        <p className="text-muted-foreground mt-2 text-center font-medium">你现在的情绪是什么？</p>
       </CardHeader>
-      <CardContent className="p-6 md:p-8">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+      <CardContent className="p-4 md:p-10">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6 mb-8">
           {emotions.map((emotion, index) => (
             <motion.div
               key={emotion.id}
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.05, rotate: 2 }}
+              whileTap={{ scale: 0.95 }}
               transition={{ type: 'spring', stiffness: 300 }}
               animate={{
-                scale: [1, 1.05, 1],
-                y: [0, -5, 0],
+                y: [0, -4, 0],
               }}
               // @ts-ignore
               custom={index}
@@ -51,48 +50,50 @@ export default function StepEmotion({
               <Card
                 onClick={() => setSelectedEmotion(emotion)}
                 className={cn(
-                  "cursor-pointer transition-all duration-300 ease-in-out hover:shadow-xl text-center p-4 flex flex-col items-center justify-center aspect-square rounded-2xl group",
+                  "cursor-pointer transition-all duration-300 ease-in-out text-center p-3 md:p-6 flex flex-col items-center justify-center aspect-square rounded-2xl md:rounded-3xl group border-2",
                   selectedEmotion?.id === emotion.id
-                    ? 'ring-4 ring-accent ring-offset-2 bg-secondary shadow-2xl scale-105'
-                    : 'bg-card hover:bg-yellow-100'
+                    ? 'border-accent bg-secondary shadow-lg scale-105'
+                    : 'border-transparent bg-card hover:bg-yellow-50 hover:border-yellow-200'
                 )}
               >
                 <motion.div 
-                    className="text-6xl mb-2"
+                    className="text-4xl sm:text-5xl md:text-6xl mb-2"
                     animate={{
-                        scale: [1, 1.05, 1],
+                        scale: selectedEmotion?.id === emotion.id ? [1, 1.1, 1] : 1,
                     }}
-                    // @ts-ignore
                     transition={{
-                        duration: 2,
-                        ease: "easeInOut",
-                        delay: index * 0.2
+                        duration: 0.5,
                     }}
                 >
                     {emotion.emoji}
                 </motion.div>
-                <p className="text-sm font-medium text-center leading-tight">{emotion.name.en}</p>
-                <p className="text-xs font-medium text-center leading-tight text-muted-foreground">{emotion.name.zh}</p>
+                <div className="flex flex-col gap-0.5">
+                    <p className="text-sm md:text-base font-bold leading-tight">{emotion.name.en}</p>
+                    <p className="text-[10px] md:text-xs font-medium leading-tight text-muted-foreground">{emotion.name.zh}</p>
+                </div>
               </Card>
             </motion.div>
           ))}
         </div>
 
         {selectedEmotion && (
-          <div className="space-y-4 animate-in fade-in duration-500">
-            <h3 className="text-center text-lg font-medium text-foreground">
-              How strong is this feeling? <span className="text-muted-foreground">(0-10)</span>
-              <p className="text-muted-foreground text-sm">这股情绪的强度有多大？ (0-10)</p>
+          <div className="space-y-6 animate-in slide-in-from-bottom-5 duration-500 max-w-2xl mx-auto bg-primary/5 p-6 rounded-3xl border border-primary/10">
+            <h3 className="text-center text-lg md:text-xl font-bold text-primary">
+              How strong is this feeling? <span className="text-primary/50 text-sm">(0-10)</span>
+              <p className="text-muted-foreground text-sm font-medium">这股情绪的强度有多大？</p>
             </h3>
-            <div className="flex items-center gap-4 max-w-md mx-auto">
-              <span className="text-4xl">{selectedEmotion.emoji}</span>
-              <Slider
-                value={[intensity]}
-                onValueChange={(value) => setIntensity(value[0])}
-                max={10}
-                step={1}
-              />
-              <span className="text-2xl font-bold w-10 text-center">{intensity}</span>
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="flex items-center gap-4 w-full">
+                <span className="text-4xl md:text-5xl flex-shrink-0">{selectedEmotion.emoji}</span>
+                <Slider
+                    value={[intensity]}
+                    onValueChange={(value) => setIntensity(value[0])}
+                    max={10}
+                    step={1}
+                    className="flex-1"
+                />
+                <span className="text-3xl md:text-4xl font-black w-12 text-primary">{intensity}</span>
+              </div>
             </div>
           </div>
         )}

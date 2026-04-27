@@ -363,53 +363,58 @@ export default function TeacherDashboardClient() {
   }
 
   return (
-    <div className="grid gap-6">
-      <Card>
-        <CardHeader className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="text-left w-full">
-            <CardTitle>Search Records / 搜索记录</CardTitle>
-            <CardDescription>Filter by name or date.</CardDescription>
+    <div className="grid gap-6 px-2 md:px-0">
+      <Card className="shadow-xl rounded-3xl overflow-hidden border-2 border-primary/10">
+        <CardHeader className="flex flex-col md:flex-row items-center justify-between gap-6 bg-primary/5 p-6 md:p-10">
+          <div className="text-left w-full space-y-1">
+            <CardTitle className="text-2xl md:text-3xl font-bold text-primary">Search Records / 搜索记录</CardTitle>
+            <CardDescription className="text-lg">Filter by name or date to find specific student insights.</CardDescription>
           </div>
-          <Button variant="outline" onClick={handleExportCSV} className="whitespace-nowrap flex gap-2">
-              <Download className="w-4 h-4" />
-              Export to CSV / 导出表格
+          <Button variant="outline" onClick={handleExportCSV} className="w-full md:w-auto whitespace-nowrap flex gap-2 h-12 rounded-full border-2 border-primary/20 hover:bg-primary hover:text-white transition-all text-lg px-6">
+              <Download className="w-5 h-5" />
+              Export CSV / 导出表格
           </Button>
         </CardHeader>
-        <CardContent className="flex flex-col sm:flex-row gap-4 items-end">
-          <div className="grid w-full sm:w-auto sm:flex-1 gap-1.5 text-left">
-            <Label>Student Name</Label>
+        <CardContent className="flex flex-col md:flex-row gap-6 p-6 md:p-10 items-end">
+          <div className="grid w-full md:flex-1 gap-2 text-left">
+            <Label className="text-lg font-bold text-primary px-1">Student Name</Label>
             <Input
               placeholder="Search student..."
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
+              className="h-14 rounded-2xl text-lg px-6 border-2 focus:border-primary transition-all"
             />
           </div>
-          <div className="grid w-full sm:w-auto gap-1.5 text-left">
-            <Label>Date</Label>
+          <div className="grid w-full md:w-auto gap-2 text-left">
+            <Label className="text-lg font-bold text-primary px-1">Date</Label>
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant={'outline'} className={cn('w-full sm:w-[240px] justify-start text-left font-normal', !searchDate && 'text-muted-foreground')}>
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+                <Button variant={'outline'} className={cn('w-full md:w-[280px] h-14 justify-start text-left font-medium text-lg rounded-2xl border-2 px-6', !searchDate && 'text-muted-foreground')}>
+                  <CalendarIcon className="mr-3 h-5 w-5 text-primary" />
                   {searchDate ? format(searchDate, 'PPP') : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="single" selected={searchDate} onSelect={setSearchDate} initialFocus />
+              <PopoverContent className="w-auto p-0 rounded-3xl overflow-hidden shadow-2xl" align="end">
+                <Calendar mode="single" selected={searchDate} onSelect={setSearchDate} initialFocus className="rounded-3xl" />
               </PopoverContent>
             </Popover>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="shadow-2xl rounded-3xl overflow-hidden border-2 border-primary/10 mb-20">
         <CardContent className="p-0">
           {checkinsLoading ? (
-            <div className="p-8 space-y-4">
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-16 w-full" />
+            <div className="p-8 space-y-6">
+              <Skeleton className="h-24 w-full rounded-3xl" />
+              <Skeleton className="h-24 w-full rounded-3xl" />
+              <Skeleton className="h-24 w-full rounded-3xl" />
             </div>
           ) : filteredCheckins.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">No records found.</div>
+            <div className="text-center py-24 text-muted-foreground">
+                <Users className="w-20 h-20 mx-auto mb-4 opacity-10" />
+                <p className="text-xl font-medium">No records found matching your search.</p>
+            </div>
           ) : (
             <Accordion type="single" collapsible className="w-full">
               {filteredCheckins.map((checkin, index) => {
@@ -417,49 +422,86 @@ export default function TeacherDashboardClient() {
                 const postCoolDownEmotion = checkin.postCoolDownEmotion ? emotions.find(e => e.id === checkin.postCoolDownEmotion) : null;
 
                 return (
-                  <AccordionItem value={`item-${index}`} key={checkin.id || index} className="border-b px-4">
-                    <AccordionTrigger className="hover:no-underline">
-                      <div className="flex items-center gap-4 w-full text-left">
-                        <Avatar>
+                  <AccordionItem value={`item-${index}`} key={checkin.id || index} className="border-b-2 border-primary/5 hover:bg-primary/5 transition-colors">
+                    <AccordionTrigger className="hover:no-underline px-4 md:px-8 py-6 md:py-8">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 w-full text-left">
+                        <Avatar className="w-16 h-16 md:w-20 md:h-20 border-4 border-white shadow-xl ring-2 ring-primary/10">
                           <AvatarImage src={`https://api.dicebear.com/7.x/adventurer/svg?seed=${checkin.student}`} />
-                          <AvatarFallback>{checkin.student.charAt(0)}</AvatarFallback>
+                          <AvatarFallback className="text-2xl font-bold bg-primary/10">{checkin.student.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <div className='flex-1'>
-                          <p className="text-black font-bold">{checkin.student}</p>
-                          <p className="text-sm font-normal text-muted-foreground">{klFormatter.format(new Date(checkin.date))}</p>
+                        <div className='flex-1 space-y-1'>
+                          <p className="text-xl md:text-2xl font-black text-primary">{checkin.student}</p>
+                          <p className="text-base md:text-lg font-medium text-muted-foreground flex items-center gap-2">
+                              <CalendarIcon className="w-4 h-4" />
+                              {klFormatter.format(new Date(checkin.date))}
+                          </p>
                         </div>
-                        <div className="flex items-center gap-2 pr-4">
-                            <span className="text-3xl">{emotion?.emoji}</span>
-                            {postCoolDownEmotion && <><Wind className="w-4 h-4" /><span className="text-3xl">{postCoolDownEmotion?.emoji}</span></>}
-                            <Badge variant="secondary">Intensity: {checkin.intensity}</Badge>
+                        <div className="flex items-center gap-4 py-2 sm:py-0 w-full sm:w-auto justify-end border-t sm:border-0 border-primary/10 pt-4 sm:pt-0">
+                            <div className="flex items-center gap-2">
+                                <span className="text-4xl md:text-5xl drop-shadow-sm">{emotion?.emoji}</span>
+                                {postCoolDownEmotion && (
+                                    <div className="flex items-center gap-2 animate-in slide-in-from-left-2">
+                                        <Wind className="w-6 h-6 text-primary animate-pulse" />
+                                        <span className="text-4xl md:text-5xl drop-shadow-sm">{postCoolDownEmotion?.emoji}</span>
+                                    </div>
+                                )}
+                            </div>
+                            <Badge variant="secondary" className="px-4 py-2 rounded-full text-base font-bold bg-white border-2 border-primary/10 text-primary whitespace-nowrap">
+                                Intensity: {checkin.intensity}/10
+                            </Badge>
                         </div>
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent className="p-4 space-y-6 bg-muted/20 rounded-lg mb-4">
-                      <div className="grid md:grid-cols-2 gap-6">
+                    <AccordionContent className="p-4 md:p-10 space-y-8 bg-white/50 backdrop-blur-sm rounded-t-none">
+                      <div className="grid md:grid-cols-2 gap-8 md:gap-12">
                         <CheckinDetail icon={User} title="What Happened" title_zh="发生了什么">
-                          <p className="bg-white p-3 rounded border text-black text-left">{checkin.description || 'N/A'}</p>
+                          <p className="bg-white p-6 rounded-3xl border-2 border-primary/10 text-lg text-black leading-relaxed shadow-sm">{checkin.description || 'N/A'}</p>
                         </CheckinDetail>
 
                         <CheckinDetail icon={Activity} title="Body Scan" title_zh="身体扫描">
-                          <div className="flex flex-wrap gap-2">
-                             {checkin.bodyScan.map(part => <Badge variant="outline" className="bg-white text-black" key={part}>{part}</Badge>)}
+                          <div className="flex flex-wrap gap-3">
+                             {checkin.bodyScan.map(part => (
+                                <Badge variant="outline" className="bg-white text-primary text-base px-4 py-2 rounded-xl border-2 border-primary/10 font-bold" key={part}>
+                                    {part}
+                                </Badge>
+                             ))}
+                             {checkin.bodyScan.length === 0 && <p className="text-muted-foreground italic">No sensations recorded.</p>}
                           </div>
                         </CheckinDetail>
 
                         <CheckinDetail icon={Heart} title="Needs & Hopes" title_zh="需求与希望">
-                          <div className="space-y-1 bg-white p-3 rounded border text-sm text-black text-left">
-                            <p><strong>Need / 需求:</strong> {checkin.needs.need}</p>
-                            <p><strong>Hope / 希望:</strong> {checkin.needs.hope}</p>
-                            <p><strong>Self-Care / 自我照顾:</strong> {checkin.needs.selfCare}</p>
+                          <div className="space-y-4 bg-white p-6 rounded-3xl border-2 border-primary/10 text-lg shadow-sm">
+                            <div className="flex flex-col gap-1 border-b pb-3 border-primary/5">
+                                <span className="text-sm font-bold text-primary opacity-60 uppercase tracking-wider">Need / 需求</span>
+                                <p className="text-black font-medium">{checkin.needs.need || '-'}</p>
+                            </div>
+                            <div className="flex flex-col gap-1 border-b pb-3 border-primary/5">
+                                <span className="text-sm font-bold text-primary opacity-60 uppercase tracking-wider">Hope / 希望</span>
+                                <p className="text-black font-medium">{checkin.needs.hope || '-'}</p>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <span className="text-sm font-bold text-primary opacity-60 uppercase tracking-wider">Self-Care / 自我照顾</span>
+                                <p className="text-black font-medium">{checkin.needs.selfCare || '-'}</p>
+                            </div>
                           </div>
                         </CheckinDetail>
 
                         {postCoolDownEmotion && (
                           <CheckinDetail icon={Smile} title="After Cool-down" title_zh="练习之后">
-                            <div className="bg-white p-3 rounded border text-black text-left">
-                               <p><strong>Emotion:</strong> {postCoolDownEmotion.name.en} (Intensity: {checkin.postCoolDownIntensity})</p>
-                          <p className="text-xs text-muted-foreground mt-2">Recorded at: {klFormatter.format(new Date(checkin.date))}</p>
+                            <div className="bg-primary/5 p-6 rounded-3xl border-2 border-accent/20 text-lg shadow-inner relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:scale-125 transition-transform">
+                                    <Wind className="w-12 h-12" />
+                                </div>
+                                <div className="flex items-center gap-4 mb-2">
+                                    <span className="text-5xl">{postCoolDownEmotion.emoji}</span>
+                                    <div>
+                                        <p className="font-bold text-accent-foreground text-xl">{postCoolDownEmotion.name.en}</p>
+                                        <p className="text-accent-foreground/60 text-sm font-bold uppercase tracking-widest">Post Cool-down</p>
+                                    </div>
+                                </div>
+                                <p className="font-bold text-primary mt-4 py-2 border-t border-accent/10">
+                                    Final Intensity: <span className="text-2xl underline">{checkin.postCoolDownIntensity}</span>/10
+                                </p>
                             </div>
                           </CheckinDetail>
                         )}
