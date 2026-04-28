@@ -40,7 +40,8 @@ function generateReportHtml(checkIn: StudentCheckIn, aiReport: string) {
           .meta-info { background-color: #f0fdf4; border: 1px solid #dcfce7; padding: 20px; margin-bottom: 25px; border-radius: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
           .meta-info p { margin: 0; }
           .report-section { margin-bottom: 25px; }
-          .ai-report { background-color: #fffbeb; border: 2px dashed #fcd34d; padding: 20px; border-radius: 8px; white-space: pre-line; color: #000; font-size: 16px; text-align: left; }
+          .report-section p { margin: 8px 0; }
+          .ai-report { background-color: #fffbeb; border: 2px dashed #fcd34d; padding: 20px; border-radius: 8px; white-space: pre-line; color: #000; font-size: 16.5px; text-align: left; line-height: 1.8; }
           strong { color: #000; }
           @media print {
             .no-print { display: none; }
@@ -75,16 +76,20 @@ function generateReportHtml(checkIn: StudentCheckIn, aiReport: string) {
 
           <div class="report-section">
             <h2>Needs & Hopes / 需求与希望</h2>
-            <p><strong>Need / 需求:</strong> ${checkIn.needs.need || 'Not specified'}</p>
-            <p><strong>Hope / 希望:</strong> ${checkIn.needs.hope || 'Not specified'}</p>
-            <p><strong>Self-Care / 自我照顾:</strong> ${checkIn.needs.selfCare || 'Not specified'}</p>
+            <div style="padding-left: 10px;">
+              <p><strong>Need / 需求:</strong> ${checkIn.needs.need || '-'}</p>
+              <p><strong>Hope / 希望:</strong> ${checkIn.needs.hope || '-'}</p>
+              <p><strong>Care / 照顾:</strong> ${checkIn.needs.selfCare || '-'}</p>
+            </div>
           </div>
           
           ${postCoolDownEmotion ? `
           <div class="report-section">
-            <h2>After Cool-Down Exercise / 练习之后</h2>
-            <p><strong>Final Emotion / 最终情绪:</strong> ${postCoolDownEmotion.emoji} ${postCoolDownEmotion.name.en} / ${postCoolDownEmotion.name.zh}</p>
-            <p><strong>Final Intensity / 最终强度:</strong> ${checkIn.postCoolDownIntensity} / 10</p>
+            <h2>Regulation Progress / 调节进度</h2>
+            <div style="padding-left: 10px;">
+              <p><strong>Post-Emotion / 最终情绪:</strong> ${postCoolDownEmotion.emoji} ${postCoolDownEmotion.name.en} / ${postCoolDownEmotion.name.zh}</p>
+              <p><strong>New Intensity / 新强度:</strong> ${checkIn.postCoolDownIntensity} / 10</p>
+            </div>
           </div>
           ` : ''}
 

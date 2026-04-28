@@ -186,12 +186,16 @@ function appendStyledSection(body, title, content) {
   });
   pTitle.setSpacingBefore(10);
   
-  var pContent = body.appendParagraph(content);
-  pContent.setAttributes({
-    [DocumentApp.Attribute.FONT_SIZE]: 10,
-    [DocumentApp.Attribute.FOREGROUND_COLOR]: '#2c3e50'
+  // Handle multi-line content (like Needs, Hopes, and AI Report)
+  var lines = content.toString().split('\n');
+  lines.forEach(function(line) {
+    var pContent = body.appendParagraph(line);
+    pContent.setAttributes({
+      [DocumentApp.Attribute.FONT_SIZE]: 10,
+      [DocumentApp.Attribute.FOREGROUND_COLOR]: '#2c3e50'
+    });
+    pContent.setSpacingAfter(line.trim().length > 0 ? 2 : 0);
   });
-  pContent.setSpacingAfter(5);
 }
 
 /**
@@ -210,10 +214,10 @@ function manualTestReport() {
     intensity: 8,
     description: "I had a great lesson today and learned something new!",
     bodyScan: "Head: Warm",
-    needs: "Need: Connection, Hope: To share my learning.",
+    needs: "Need: Connection\nHope: To share my learning\nCare: To rest well",
     postEmotion: "Excited / 兴奋",
     postIntensity: 9,
-    aiReport: "The student is showing high engagement and positive self-awareness. Their physical sensations correlate with the reported positive emotions. Encouraging them to share their learning as they hoped will further strengthen their sense of competence and connection."
+    aiReport: "The student is showing high engagement and positive self-awareness. Their physical sensations correlate with the reported positive emotions.\n\n学生展示了高度的参与感和积极的自我意识。他们的身体感觉与报告的正向情绪相关联。"
   };
   
   createDriveReport(testData);

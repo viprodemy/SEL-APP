@@ -74,8 +74,8 @@ Do NOT be generic. Use the "Student's Context" and "Stated Hope" to give the tea
 3. **Observation**: If there was a cool-down, did it help? What does that tell the teacher about {{studentName}}'s self-regulation?
 4. **Tone**: Supportive, professional, and observant.
 
-**IMPORTANT**: Provide the report in both English and Chinese. Separate the languages with a newline.
-Example: "English paragraph analyzing the specific context and giving a clear tip.\n中文段落，深入分析学生情况并提供具体建议。"`,
+**IMPORTANT**: Provide the report in both English and Chinese. Separate the languages with TWO newlines.
+Example: "English paragraph analyzing the specific context and giving a clear tip.\n\n中文段落，深入分析学生情况并提供具体建议。"`,
 });
 
 const generateTeacherReportFlow = ai.defineFlow(

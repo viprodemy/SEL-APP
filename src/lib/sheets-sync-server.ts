@@ -40,7 +40,7 @@ export async function syncCheckinToSheets(data: any, aiReport?: string) {
     intensity: data.intensity,
     description: data.description,
     bodyScan: Array.isArray(data.bodyScan) ? data.bodyScan.join(', ') : String(data.bodyScan),
-    needs: typeof data.needs === 'object' ? `Need: ${data.needs.need}, Hope: ${data.needs.hope}, Care: ${data.needs.selfCare}` : String(data.needs),
+    needs: typeof data.needs === 'object' ? `Need: ${data.needs.need}\nHope: ${data.needs.hope}\nCare: ${data.needs.selfCare}` : String(data.needs),
     postEmotion: data.postCoolDownEmotion || '',
     postIntensity: data.postCoolDownIntensity || 0,
     loggedInUser: data.loggedInUser || 'Anonymous',
