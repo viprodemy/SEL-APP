@@ -23,13 +23,30 @@ import { Calendar } from '../ui/calendar';
 
 function safeDate(dateStr: string | number | Date): Date {
   if (!dateStr) return new Date();
-  const d = new Date(dateStr);
-  if (isNaN(d.getTime())) {
-    // Try to handle dd/mm/yyyy or common sheet formats if basic Date fails
-    console.warn("Invalid date string encountered:", dateStr);
-    return new Date(); 
+  if (dateStr instanceof Date) return dateStr;
+  
+  // Try standard parsing first (ISO, YYYY-MM-DD, etc)
+  let d = new Date(dateStr);
+  if (!isNaN(d.getTime())) return d;
+  
+  // Handle DD/MM/YYYY, HH:mm:ss format from Google Sheets
+  if (typeof dateStr === 'string') {
+    // Regex for dd/mm/yyyy with optional time
+    const match = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:,?\s*(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/);
+    if (match) {
+      const day = parseInt(match[1], 10);
+      const month = parseInt(match[2], 10) - 1;
+      const year = parseInt(match[3], 10);
+      const hour = parseInt(match[4] || '0', 10);
+      const minute = parseInt(match[5] || '0', 10);
+      const second = parseInt(match[6] || '0', 10);
+      d = new Date(year, month, day, hour, minute, second);
+      if (!isNaN(d.getTime())) return d;
+    }
   }
-  return d;
+
+  // Fallback for other invalid strings
+  return new Date(); 
 }
 
 function generateReportHtml(checkIn: StudentCheckIn, aiReport: string) {
