@@ -21,9 +21,29 @@ import { Calendar } from '../ui/calendar';
 // import { collection, query, orderBy } from 'firebase/firestore'; // Removing Firebase
 // import { useFirestore, useCollection } from '@/firebase';
 
+function safeDate(dateStr: string | number | Date): Date {
+  if (!dateStr) return new Date();
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) {
+    // Try to handle dd/mm/yyyy or common sheet formats if basic Date fails
+    console.warn("Invalid date string encountered:", dateStr);
+    return new Date(); 
+  }
+  return d;
+}
+
 function generateReportHtml(checkIn: StudentCheckIn, aiReport: string) {
     const initialEmotion = emotions.find(e => e.id === checkIn.emotion);
     const postCoolDownEmotion = checkIn.postCoolDownEmotion ? emotions.find(e => e.id === checkIn.postCoolDownEmotion) : null;
+    const formattedDate = new Intl.DateTimeFormat('en-GB', { 
+        timeZone: 'Asia/Kuala_Lumpur', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: false 
+    }).format(safeDate(checkIn.date));
     
     const reportHtml = `
       <!DOCTYPE html>
@@ -59,7 +79,7 @@ function generateReportHtml(checkIn: StudentCheckIn, aiReport: string) {
           
           <div class="meta-info">
             <p><strong>Student / 学生:</strong> ${checkIn.student}</p>
-            <p><strong>Date / 日期:</strong> ${new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kuala_Lumpur', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).format(new Date(checkIn.date))}</p>
+            <p><strong>Date / 日期:</strong> ${formattedDate}</p>
             <p><strong>Initial Emotion / 初始情绪:</strong> ${initialEmotion?.emoji} ${initialEmotion?.name.en} / ${initialEmotion?.name.zh}</p>
             <p><strong>Intensity / 强度:</strong> ${checkIn.intensity} / 10</p>
           </div>
@@ -250,9 +270,9 @@ export default function TeacherDashboardClient() {
             bodyScan: typeof normalizedRow.bodyscan === 'string' ? normalizedRow.bodyscan.split(',').map((s: string) => s.trim()) : 
                       (Array.isArray(row.bodyScan) ? row.bodyScan : []),
             needs: {
-              need: normalizedRow.needs?.split('Hope:')[0]?.replace('Need:', '').trim() || '',
-              hope: normalizedRow.needs?.split('Hope:')[1]?.split('Care:')[0]?.trim() || '',
-              selfCare: normalizedRow.needs?.split('Care:')[1]?.trim() || ''
+              need: (normalizedRow.needs || '').split(/Hope:|希望:/i)[0]?.replace(/Need:|需求:/i, '').trim() || '',
+              hope: (normalizedRow.needs || '').split(/Hope:|希望:/i)[1]?.split(/Care:|照顾:|Self-Care:/i)[0]?.trim() || '',
+              selfCare: (normalizedRow.needs || '').split(/Care:|照顾:|Self-Care:/i)[1]?.trim() || ''
             },
             postCoolDownEmotion: normalizedRow.postemotion || row.postEmotion || '',
             postCoolDownIntensity: Number(normalizedRow.postintensity || row.postIntensity || 0)
@@ -260,7 +280,7 @@ export default function TeacherDashboardClient() {
         });
 
         // Sort by date desc
-        mappedData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        mappedData.sort((a, b) => safeDate(b.date).getTime() - safeDate(a.date).getTime());
         setAllCheckins(mappedData);
       } catch (error) {
         console.error("Error fetching from sheets:", error);
@@ -297,7 +317,7 @@ export default function TeacherDashboardClient() {
 
     if (searchDate) {
       results = results.filter(checkin =>
-        isSameDay(new Date(checkin.date), searchDate)
+        isSameDay(safeDate(checkin.date), searchDate)
       );
     }
     
@@ -324,7 +344,7 @@ export default function TeacherDashboardClient() {
       const headers = ["Student", "Date", "Emotion", "Intensity", "Description", "Body Scan", "Need", "Hope", "Self-Care"];
       const rows = filteredCheckins.map(c => [
           c.student,
-          format(new Date(c.date), 'yyyy-MM-dd HH:mm'),
+          format(safeDate(c.date), 'yyyy-MM-dd HH:mm'),
           c.emotion,
           c.intensity,
           `"${c.description.replace(/"/g, '""')}"`,
@@ -438,7 +458,7 @@ export default function TeacherDashboardClient() {
                           <p className="text-xl md:text-2xl font-black text-foreground">{checkin.student}</p>
                           <p className="text-base md:text-lg font-medium text-foreground/70 flex items-center gap-2">
                               <CalendarIcon className="w-4 h-4" />
-                              {klFormatter.format(new Date(checkin.date))}
+                              {klFormatter.format(safeDate(checkin.date))}
                           </p>
                         </div>
                         <div className="flex items-center gap-4 py-2 sm:py-0 w-full sm:w-auto justify-end border-t sm:border-0 border-primary/10 pt-4 sm:pt-0">
