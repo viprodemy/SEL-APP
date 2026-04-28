@@ -8,17 +8,26 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 import { format } from 'date-fns';
-import { CalendarIcon, History, Wind, Heart, Activity, User, Smile } from 'lucide-react';
+import { CalendarIcon, History, Wind, Heart, Activity, User, Smile, Printer } from 'lucide-react';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { fetchCheckinsFromSheets } from '@/lib/sheets-fetch';
 import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { generateTeacherReport } from '@/ai/flows/generate-teacher-report';
+import { useRef } from 'react';
 
 function safeDate(dateStr: string | number | Date): Date {
   if (!dateStr) return new Date();
   if (dateStr instanceof Date) return dateStr;
+  
+  // Try standard parsing first (ISO, YYYY-MM-DD, etc)
   let d = new Date(dateStr);
   if (!isNaN(d.getTime())) return d;
+  
+  // Handle DD/MM/YYYY, HH:mm:ss format from Google Sheets
   if (typeof dateStr === 'string') {
+    // Regex for dd/mm/yyyy with optional time
     const match = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:,?\s*(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/);
     if (match) {
       const day = parseInt(match[1], 10);
@@ -31,7 +40,185 @@ function safeDate(dateStr: string | number | Date): Date {
       if (!isNaN(d.getTime())) return d;
     }
   }
+
+  // Fallback for other invalid strings
   return new Date(); 
+}
+
+function generateReportHtml(checkIn: StudentCheckIn, aiReport: string) {
+    const initialEmotion = emotions.find(e => e.id === checkIn.emotion);
+    const postCoolDownEmotion = checkIn.postCoolDownEmotion ? emotions.find(e => e.id === checkIn.postCoolDownEmotion) : null;
+    const formattedDate = new Intl.DateTimeFormat('en-GB', { 
+        timeZone: 'Asia/Kuala_Lumpur', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: false 
+    }).format(safeDate(checkIn.date));
+    
+    const reportHtml = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Check-in Report: ${checkIn.student}</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #000; max-width: 800px; margin: 20px auto; padding: 20px; text-align: left; }
+          .container { border: 2px solid #359055; border-radius: 12px; padding: 30px; background: #fff; }
+          h1 { color: #359055; font-size: 28px; border-bottom: 3px solid #359055; padding-bottom: 10px; text-align: center; }
+          h2 { font-size: 20px; margin-top: 25px; color: #256030; border-left: 5px solid #359055; padding-left: 10px; }
+          .meta-info { background-color: #f0fdf4; border: 1px solid #dcfce7; padding: 20px; margin-bottom: 25px; border-radius: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+          .meta-info p { margin: 0; }
+          .report-section { margin-bottom: 25px; }
+          .report-section p { margin: 8px 0; }
+          .ai-report { background-color: #fffbeb; border: 2px dashed #fcd34d; padding: 20px; border-radius: 8px; white-space: pre-line; color: #000; font-size: 16.5px; text-align: left; line-height: 1.8; }
+          strong { color: #000; }
+          @media print {
+            .no-print { display: none; }
+            body { margin: 0; padding: 0; }
+            .container { border: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="no-print" style="text-align: right; margin-bottom: 10px;">
+            <button onclick="window.print()" style="padding: 10px 20px; background: #359055; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Print to PDF / 打印为 PDF</button>
+          </div>
+          <h1>Student Check-in Report / 学生签到报告</h1>
+          
+          <div class="meta-info">
+            <p><strong>Student / 学生:</strong> ${checkIn.student}</p>
+            <p><strong>Date / 日期:</strong> ${formattedDate}</p>
+            <p><strong>Initial Emotion / 初始情绪:</strong> ${initialEmotion?.emoji} ${initialEmotion?.name.en} / ${initialEmotion?.name.zh}</p>
+            <p><strong>Intensity / 强度:</strong> ${checkIn.intensity} / 10</p>
+          </div>
+
+          <div class="report-section">
+            <h2>What Happened / 发生了什么</h2>
+            <p>${checkIn.description || 'No description provided. / 未提供描述。'}</p>
+          </div>
+
+          <div class="report-section">
+            <h2>Body Scan / 身体扫描</h2>
+            <p>${checkIn.bodyScan.length > 0 ? checkIn.bodyScan.join(', ') : 'No specific body sensations noted. / 未记录特定的身体感觉。'}</p>
+          </div>
+
+          <div class="report-section">
+            <h2>Needs & Hopes / 需求与希望</h2>
+            <div style="padding-left: 10px;">
+              <p><strong>Need / 需求:</strong> ${checkIn.needs.need || '-'}</p>
+              <p><strong>Hope / 希望:</strong> ${checkIn.needs.hope || '-'}</p>
+              <p><strong>Care / 照顾:</strong> ${checkIn.needs.selfCare || '-'}</p>
+            </div>
+          </div>
+          
+          ${postCoolDownEmotion ? `
+          <div class="report-section">
+            <h2>Regulation Progress / 调节进度</h2>
+            <div style="padding-left: 10px;">
+              <p><strong>Post-Emotion / 最终情绪:</strong> ${postCoolDownEmotion.emoji} ${postCoolDownEmotion.name.en} / ${postCoolDownEmotion.name.zh}</p>
+              <p><strong>New Intensity / 新强度:</strong> ${checkIn.postCoolDownIntensity} / 10</p>
+            </div>
+          </div>
+          ` : ''}
+
+          <div class="report-section">
+            <h2>Generated Report / 报告</h2>
+            <div class="ai-report">${aiReport.replace(/\n/g, '<br>')}</div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+    return reportHtml;
+}
+
+function ReportGenerator({ checkIn }: { checkIn: StudentCheckIn }) {
+    const [report, setReport] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const { toast } = useToast();
+    const hasFetched = useRef<string | null>(null);
+  
+    useEffect(() => {
+      const reportKey = `${checkIn.student}-${checkIn.date}`;
+      if (hasFetched.current === reportKey || report) return;
+
+      const fetchReport = async () => {
+        setIsLoading(true);
+        hasFetched.current = reportKey;
+        try {
+          const emotionName = emotions.find(e => e.id === checkIn.emotion)?.name.en || checkIn.emotion;
+          const postCoolDownEmotionName = checkIn.postCoolDownEmotion ? emotions.find(e => e.id === checkIn.postCoolDownEmotion)?.name.en : undefined;
+          
+          const result = await generateTeacherReport({
+              studentName: checkIn.student,
+              emotion: emotionName,
+              intensity: checkIn.intensity,
+              description: checkIn.description,
+              bodyScan: checkIn.bodyScan,
+              needs: checkIn.needs,
+              postCoolDownEmotion: postCoolDownEmotionName,
+              postCoolDownIntensity: checkIn.postCoolDownIntensity,
+          });
+          setReport(result.report);
+        } catch (error) {
+          console.error("Failed to generate report", error);
+          setReport("Could not load AI-generated report.\n无法加载AI报告。");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchReport();
+    }, [checkIn.student, checkIn.date, checkIn.emotion]);
+
+    const handleDownloadReport = () => {
+        if (isLoading) {
+            toast({
+                title: "Please wait",
+                description: "Generating report...",
+            });
+            return;
+        }
+        const reportHtml = generateReportHtml(checkIn, report);
+        const newWindow = window.open();
+        newWindow?.document.write(reportHtml);
+        newWindow?.document.close();
+    }
+  
+    return (
+        <Card className="shadow-md animate-in fade-in duration-500 my-4 bg-primary/5 border-primary/20">
+        <CardHeader className="p-4 md:p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+                <div className="text-left">
+                    <CardTitle className="font-bold text-lg flex items-center gap-2 text-primary">
+                        My Emotional Analysis / 情绪分析报告
+                    </CardTitle>
+                </div>
+                <Button variant="default" size="sm" className="flex gap-2" onClick={handleDownloadReport}>
+                    <Printer className="w-4 h-4" />
+                    Download Report / 下载报告
+                </Button>
+            </div>
+        </CardHeader>
+        <CardContent className="px-4 md:px-6 pb-4 md:pb-6">
+            {isLoading ? (
+                <div className="space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-4/5" />
+                </div>
+            ) : (
+                <div className="text-black text-left text-sm whitespace-pre-line bg-white p-4 rounded-xl border border-primary/10">
+                    <p>{report}</p>
+                </div>
+            )}
+        </CardContent>
+      </Card>
+    );
 }
 
 const CheckinDetail = ({icon: Icon, title, title_zh, children}: {icon: React.ElementType, title: string, title_zh: string, children: React.ReactNode}) => (
@@ -212,6 +399,7 @@ export default function StudentHistoryClient() {
                         </CheckinDetail>
                       )}
                    </div>
+                   <ReportGenerator checkIn={checkin} />
                 </AccordionContent>
               </AccordionItem>
             );
