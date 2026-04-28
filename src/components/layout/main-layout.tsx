@@ -19,6 +19,7 @@ import {
   User,
   Wind,
   Users,
+  History,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -28,8 +29,9 @@ import { Label } from '../ui/label';
 import { Switch } from '../ui/switch';
 
 const studentNavItems = [
-  { href: '/', label: 'Check-in', icon: Smile },
-  { href: '/cool-down', label: 'Cool Down', icon: Wind },
+  { href: '/', label: 'Check-in / 签到', icon: Smile },
+  { href: '/history', label: 'History / 记录', icon: History },
+  { href: '/cool-down', label: 'Cool Down / 调节', icon: Wind },
 ];
 
 const teacherNavItems = [
